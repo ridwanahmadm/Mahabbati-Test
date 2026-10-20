@@ -7,7 +7,13 @@ Janji utamanya: **"Kami menemani sebelum, saat, dan setelah akad."**
 - **Saat akad:** khitbah, akad, akad di masjid, walimah, atau paket lengkap.
 - **Setelah akad:** kajian dan seminar rumah tangga, serta konsultasi syariah.
 
-Dibangun dengan [Astro](https://astro.build) dan menghasilkan HTML statis, ditambah GSAP (ScrollTrigger) dan Lenis. Live di **https://ridwanahmadm.github.io/Mahabbati/**. Setiap push ke `main` otomatis di-deploy lewat GitHub Pages (`.github/workflows/deploy-pages.yml`).
+Dibangun dengan [Astro](https://astro.build) dan menghasilkan HTML statis, ditambah GSAP (ScrollTrigger) dan Lenis. Setiap push ke `main` otomatis di-deploy lewat GitHub Pages (`.github/workflows/deploy-pages.yml`).
+
+## Test deployment
+
+GitHub Pages: https://ridwanahmadm.github.io/Mahabbati-Test/
+
+Workflow membangun situs dengan repository subpath supaya tautan internal, font, dan gambar berfungsi di `/Mahabbati-Test/`.
 
 ## Halaman
 
