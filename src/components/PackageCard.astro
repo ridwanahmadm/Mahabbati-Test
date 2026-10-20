@@ -15,44 +15,44 @@ const g = guestRange(pkg);
 const H = headingLevel;
 ---
 
-<article
-  class="pcard"
-  data-pcard
-  data-need={pkg.need}
-  data-min={g.min}
-  data-max={g.max}
-  data-price={pkg.priceFrom}
->
-  <figure class="pcard__photo photo">
-    <Image src={photo(pkg.photo)} alt="" widths={[360, 540, 720, 960]} sizes={sizes} />
-    {pkg.placeholder && <span class="chip chip--sample">Data contoh</span>}
-  </figure>
-  <div class="pcard__body">
-    <p class="pcard__need">{needLabel(pkg.need)}</p>
-    <H class="pcard__name">
-      <a href={url(`/layanan/${pkg.slug}/`)} class="pcard__link">{pkg.name}</a>
-    </H>
-    <p class="pcard__promise">{pkg.promise}</p>
-    <dl class="pcard__meta">
-      <div>
-        <dt>mulai</dt>
-        <dd class="num pcard__price">{rupiahShort(pkg.priceFrom)}</dd>
-      </div>
-      <div>
-        <dt>tamu</dt>
-        <dd class="num">{g.min} sampai {g.max.toLocaleString("id-ID")}</dd>
-      </div>
-    </dl>
-    {
-      pkg.includesClass && (
-        <p class="pcard__class">
-          <Icon name="school" size={18} />
-          Termasuk kelas pranikah bersama asatidz
-        </p>
-      )
-    }
-  </div>
-</article>
+<a class="pcard-link" href={url(`/layanan/${pkg.slug}/`)} aria-label={`Lihat detail ${pkg.name}`}>
+  <article
+    class="pcard"
+    data-pcard
+    data-need={pkg.need}
+    data-min={g.min}
+    data-max={g.max}
+    data-price={pkg.priceFrom}
+  >
+    <figure class="pcard__photo photo">
+      <Image src={photo(pkg.photo)} alt="" widths={[360, 540, 720, 960]} sizes={sizes} />
+      {pkg.placeholder && <span class="chip chip--sample">Data contoh</span>}
+    </figure>
+    <div class="pcard__body">
+      <p class="pcard__need">{needLabel(pkg.need)}</p>
+      <H class="pcard__name">{pkg.name}</H>
+      <p class="pcard__promise">{pkg.promise}</p>
+      <dl class="pcard__meta">
+        <div>
+          <dt>mulai</dt>
+          <dd class="num pcard__price">{rupiahShort(pkg.priceFrom)}</dd>
+        </div>
+        <div>
+          <dt>tamu</dt>
+          <dd class="num">{g.min} sampai {g.max.toLocaleString("id-ID")}</dd>
+        </div>
+      </dl>
+      {
+        pkg.includesClass && (
+          <p class="pcard__class">
+            <Icon name="school" size={18} />
+            Termasuk kelas pranikah bersama asatidz
+          </p>
+        )
+      }
+    </div>
+  </article>
+</a>
 
 <style>
   .pcard {
@@ -65,10 +65,16 @@ const H = headingLevel;
     box-shadow: inset 0 0 0 1px var(--line);
     transition: box-shadow var(--t-ui) ease;
   }
-  .pcard:hover {
+  .pcard-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    border-radius: var(--r-l);
+  }
+  .pcard-link:hover .pcard {
     box-shadow: var(--shadow-float);
   }
-  .pcard:focus-within {
+  .pcard-link:focus-visible {
     outline: 2.5px solid var(--focus);
     outline-offset: 3px;
   }
@@ -101,17 +107,6 @@ const H = headingLevel;
     font-weight: 400;
     font-size: 1.5rem;
     line-height: 1.2;
-  }
-  .pcard__link {
-    text-decoration: none;
-  }
-  .pcard__link::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-  }
-  .pcard__link:focus-visible {
-    outline: none;
   }
   .pcard__promise {
     color: var(--ink-2);
