@@ -1,0 +1,1117 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Phone from "../components/Phone.astro";
+import StoreBadges from "../components/StoreBadges.astro";
+import Faq from "../components/Faq.astro";
+import DownloadBlock from "../components/DownloadBlock.astro";
+import { Image } from "astro:assets";
+import { photo } from "../data/images";
+import { APP_FAQ, MEMBERSHIP, BENEFITS_NOTE } from "../data/content";
+import { url } from "../data/site";
+import { PLAY_STORE_URL } from "../data/site";
+
+const pains = [
+  {
+    pain: "Profil yang tidak jelas siapa di baliknya.",
+    answer:
+      "Setiap akun diverifikasi dengan e-KTP untuk WNI atau paspor untuk WNA, ditambah foto wajah. Paling lama 3×24 jam.",
+  },
+  {
+    pain: "Pengajuan yang digantung berminggu-minggu.",
+    answer: "Tidak dibalas dalam 7 hari, pengajuan batal otomatis dan kuotamu kembali.",
+    link: { href: "#anti-ghosting", label: "Coba simulasinya" },
+  },
+  {
+    pain: "Berjalan sendirian tanpa pendamping.",
+    answer: "Nadzhor selalu didampingi wali atau mahram. Ada konsultasi syariah, kajian, dan ujian pranikah di aplikasi.",
+  },
+];
+
+const steps = [
+  { title: "Daftar", body: "Cukup nama dan email, lalu buat kata sandi. Biodata bisa dilengkapi bertahap." },
+  { title: "Lengkapi profil dan verifikasi", body: "Isi biodata, lalu verifikasi identitas dengan e-KTP atau paspor dan foto wajah." },
+  { title: "Ajukan ta'aruf", body: "Telusuri calon yang sesuai kriteria, atau minta AI mencarikan, lalu kirim pengajuan." },
+  { title: "Berkenalan lewat pesan", body: "Setelah pengajuan diterima, kalian bertukar pesan dengan batas karakter dan jumlah pesan yang jelas." },
+  { title: "Proses serius", body: "Kalau sama-sama mantap, akunmu dikunci dari pengajuan lain selama proses berjalan." },
+  { title: "Nadzhor", body: "Bertemu dan berbincang lebih dalam, didampingi wali atau mahram." },
+  { title: "Khitbah", body: "Komitmen serius bahwa kedua pihak siap membangun rumah tangga." },
+  { title: "Walimah", body: "Alhamdulillah, saatnya akad dan walimah. Wedding Organizer Mahabbati siap membantu." },
+];
+
+const prep = [
+  { src: "kajian", title: "Kajian dan e-learning", body: "Materi rumah tangga dari ustadz, bisa diputar ulang." },
+  { src: "ujian_q", title: "Ujian pranikah", body: "Uji kesiapanmu: diri, keluarga, dan ilmu pernikahan." },
+  { src: "ujian_hasil", title: "Sertifikat kelulusan", body: "Lulus ujian, unduh sertifikatnya untuk dibagikan." },
+  { src: "doa", title: "Doa harian", body: "Doa memohon pasangan, doa untuk orang tua, dan lainnya." },
+  { src: "kiblat", title: "Arah kiblat dan jadwal sholat", body: "Ikut lokasimu, dengan pengingat waktu sholat." },
+  { src: "acara", title: "Acara dan tabligh akbar", body: "Kajian offline dan acara Mahabbati, tiketnya di aplikasi." },
+];
+
+const cell = (v: string | boolean | null) => v;
+---
+
+<Base
+  title="Aplikasi ta'aruf Mahabbati | Aman, terverifikasi, tidak digantung"
+  description="Ta'aruf lewat aplikasi Mahabbati: profil terverifikasi, kuota kembali bila tak dibalas 7 hari, foto muslimah hanya ditinjau admin wanita, nadzhor didampingi wali."
+  current="aplikasi"
+  ogImage="j-taaruf"
+>
+  <section class="t-hero wrap" aria-labelledby="t-hero-title">
+    <div class="t-hero__copy">
+      <h1 id="t-hero-title" class="t-display">Ta'aruf seharusnya menenangkan.</h1>
+      <p class="t-lead">
+        Profil yang jelas, pengajuan yang tidak digantung, dan pendampingan sampai akad. Semuanya di aplikasi Mahabbati.
+      </p>
+      <StoreBadges from="taaruf-hero" class="t-hero__stores" />
+      <p class="t-hero__note">Daftar gratis, dengan satu pengajuan ta'aruf pertama tanpa biaya.</p>
+    </div>
+    <div class="t-hero__phones">
+      <Phone src="kandidat" alt="Layar detail kandidat dengan skor kompatibilitas 89% dari AI Matchmaker." width={260} class="t-hero__phone t-hero__phone--back" loading="eager" />
+      <Phone src="home" alt="Beranda aplikasi Mahabbati: rekomendasi calon, menu Wedding Organizer, kajian, dan ujian pranikah." width={300} class="t-hero__phone t-hero__phone--front" loading="eager" />
+    </div>
+  </section>
+
+  <section class="pains section" aria-labelledby="pains-title">
+    <div class="wrap pains__grid">
+      <h2 id="pains-title" class="t-h2 pains__title">Tiga hal yang membuat ta'aruf melelahkan, dan jawaban kami.</h2>
+      <ul class="pains__list">
+        {
+          pains.map((p) => (
+            <li class="pain">
+              <p class="pain__q">{p.pain}</p>
+              <p class="pain__a">
+                {p.answer}
+                {p.link && (
+                  <>
+                    {" "}
+                    <a class="link" href={p.link.href}>
+                      {p.link.label}
+                    </a>
+                  </>
+                )}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Satu hal yang hidup: the 7-day quota refund, played by the visitor -->
+  <section id="anti-ghosting" class="ghost-sec section chapter-night on-dark" aria-labelledby="ghost-title">
+    <div class="wrap ghost-sec__grid">
+      <div class="ghost-sec__copy">
+        <h2 id="ghost-title" class="t-h2">Tak dibalas 7 hari? Kuotamu kembali.</h2>
+        <p class="t-lead">
+          Pengajuan yang tidak direspons dalam 7 hari dibatalkan otomatis, dan kuota yang terpakai dikembalikan. Kamu bisa
+          lanjut mengajukan ke calon lain tanpa kehilangan apa pun.
+        </p>
+        <p class="ghost-sec__hint">Kirim pengajuan di simulasi ini, lalu geser waktunya.</p>
+      </div>
+
+      <div class="ghost" data-ghost>
+        <div class="ghost__quota">
+          <span>Sisa kuota pengajuan</span>
+          <strong class="num" data-quota>10</strong>
+          <svg class="ghost__coin" data-coin viewBox="0 0 40 40" aria-hidden="true">
+            <circle cx="20" cy="20" r="17" fill="#D9C38E" />
+            <circle cx="20" cy="20" r="12.5" fill="none" stroke="#8A6E3B" stroke-width="2" />
+            <path d="M20 13v14M13 20h14" stroke="#33324A" stroke-width="3" stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <article class="ghost__req" data-req data-state="idle">
+          <div class="ghost__avatar" aria-hidden="true">AH</div>
+          <div class="ghost__who">
+            <p class="ghost__name">AH, 25 tahun</p>
+            <p class="ghost__meta">DKI Jakarta, S1, karyawan swasta</p>
+          </div>
+          <p class="ghost__status" data-status>Belum diajukan</p>
+          <span class="ghost__stamp" aria-hidden="true">Otomatis batal</span>
+        </article>
+
+        <ol class="ghost__days" aria-hidden="true" data-days>
+          {Array.from({ length: 7 }, (_, i) => <li>{i + 1}</li>)}
+        </ol>
+
+        <div class="ghost__controls">
+          <button class="btn btn--lilac" type="button" data-send>Kirim pengajuan</button>
+          <div class="ghost__time">
+            <label for="ghost-day">Geser waktu</label>
+            <input id="ghost-day" type="range" min="0" max="7" step="1" value="0" disabled data-range aria-valuetext="Hari ke-0" />
+            <output for="ghost-day" data-day>Hari ke-0</output>
+          </div>
+          <div class="ghost__more">
+            <button class="btn btn--outline" type="button" data-play disabled>
+              <Icon name="play_arrow" size={20} />Putar 7 hari
+            </button>
+            <button class="btn btn--outline" type="button" data-reset hidden>
+              <Icon name="replay" size={20} />Ulangi
+            </button>
+          </div>
+        </div>
+        <p class="visually-hidden" role="status" data-live></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="privacy section" aria-labelledby="privacy-title">
+    <div class="wrap privacy__grid">
+      <div class="privacy__copy">
+        <h2 id="privacy-title" class="t-h2">Fotomu tetap milikmu.</h2>
+        <ul class="privacy__facts">
+          <li>
+            <Icon name="verified_user" size={26} />
+            <div>
+              <h3>Ditinjau admin sesama gender</h3>
+              <p>Foto muslimah hanya ditinjau oleh admin wanita.</p>
+            </div>
+          </li>
+          <li>
+            <Icon name="hourglass_top" size={26} />
+            <div>
+              <h3>Terbuka 24 jam setelah kamu setuju</h3>
+              <p>Calon baru bisa melihat fotomu kalau kamu menyetujui permintaannya, dan hanya selama 24 jam.</p>
+            </div>
+          </li>
+          <li>
+            <Icon name="visibility_off" size={26} />
+            <div>
+              <h3>Tidak bisa diunduh</h3>
+              <p>Foto tampil di dalam aplikasi saja, tanpa tombol simpan.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="lock" data-photo-demo>
+        <figure class="lock__photo">
+          <Image
+            src={photo("profile-akhwat")}
+            alt="Contoh foto profil: muslimah berkerudung biru muda."
+            widths={[360, 540, 720]}
+            sizes="(max-width: 900px) 80vw, 360px"
+            class="lock__img"
+            data-photo-img
+          />
+          <span class="lock__badge" data-photo-badge><Icon name="lock" size={18} />Foto terkunci</span>
+        </figure>
+        <div class="lock__panel">
+          <p class="lock__status" data-photo-status>Ini contoh. Di aplikasi, foto asli tidak pernah tampil tanpa izin.</p>
+          <button class="btn" type="button" data-photo-request>Minta lihat foto</button>
+          <p class="lock__timer" data-photo-timer-wrap hidden>
+            Sisa waktu <span class="num" data-photo-timer>24:00:00</span>
+          </p>
+        </div>
+        <p class="visually-hidden" role="status" data-photo-live></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="verify section chapter-mist" aria-labelledby="verify-title">
+    <div class="wrap verify__grid">
+      <div class="verify__phones">
+        <Phone src="wna/id_capture" alt="Langkah verifikasi: memotret e-KTP atau paspor." width={230} class="verify__phone" />
+        <Phone src="wna/id_final" alt="Tinjauan akhir verifikasi identitas." width={230} class="verify__phone verify__phone--b" />
+      </div>
+      <div class="verify__copy">
+        <h2 id="verify-title" class="t-h2">Semua terverifikasi, WNI maupun WNA.</h2>
+        <p class="t-lead">
+          Setiap pengguna melewati verifikasi yang sama: foto identitas, pemeriksaan wajah, lalu tinjauan akhir oleh admin.
+          Prosesnya paling lama 3×24 jam.
+        </p>
+        <ol class="verify__steps">
+          <li><span>e-KTP untuk WNI, paspor untuk WNA</span></li>
+          <li><span>Pemeriksaan wajah dengan swafoto</span></li>
+          <li><span>Tinjauan akhir oleh admin</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="ai section" aria-labelledby="ai-title">
+    <div class="wrap ai__grid">
+      <div class="ai__copy">
+        <h2 id="ai-title" class="t-h2">Ketik kriteriamu, AI kami carikan yang cocok.</h2>
+        <p class="t-lead">
+          Tulis dengan bahasamu sendiri, misalnya "penyabar dan rajin sholat 5 waktu, domisili Jawa Barat". AI Matchmaker
+          mengurutkan calon berdasarkan kecocokan dengan kriteria tersebut.
+        </p>
+        <p class="ai__note"><Icon name="verified" size={22} />Rekomendasi hanya dari profil yang sudah terverifikasi.</p>
+      </div>
+      <Phone src="ai" alt="Pencarian kriteria pasangan dengan AI Search: 11 rekomendasi dengan persentase kecocokan." width={300} class="ai__phone" />
+    </div>
+  </section>
+
+  <section id="panduan" class="guide section chapter-mist" aria-labelledby="guide-title">
+    <div class="wrap guide__grid">
+      <div class="guide__aside">
+        <h2 id="guide-title" class="t-h2">Panduan ta'aruf di Mahabbati.</h2>
+        <p class="t-lead">Delapan langkah dari daftar sampai walimah. Setiap langkah punya aturan yang menjaga kedua pihak.</p>
+        <div class="guide__rules">
+          <h3>Aturan yang perlu kamu tahu</h3>
+          <ul>
+            <li>Setiap pesan maksimal 1.000 karakter.</li>
+            <li>Pengajuan tanpa respons 7 hari batal otomatis, kuota kembali.</li>
+            <li>Kuota tidak terbawa saat membership berakhir.</li>
+            <li>Pembelian kuota tambahan butuh membership aktif.</li>
+          </ul>
+        </div>
+      </div>
+      <ol class="guide__steps">
+        {
+          steps.map((s, i) => (
+            <li class="guide__step" data-reveal style={`--d:${(i % 2) * 70}`}>
+              <span class="guide__num num" aria-hidden="true">
+                {i + 1}
+              </span>
+              <div>
+                <h3 class="t-h3">{s.title}</h3>
+                <p>{s.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section id="pranikah" class="prep section" aria-labelledby="prep-title">
+    <div class="wrap prep__head">
+      <h2 id="prep-title" class="t-h2">Bekal ilmu sebelum akad.</h2>
+      <p class="t-lead">Kajian, ujian pranikah, sampai jadwal sholat. Tersedia untuk member Silver dan Gold.</p>
+      <div class="prep__nav">
+        <button type="button" class="prep__btn" data-row-prev aria-controls="prep-row">
+          <Icon name="chevron_left" size={26} /><span class="visually-hidden">Sebelumnya</span>
+        </button>
+        <button type="button" class="prep__btn" data-row-next aria-controls="prep-row">
+          <Icon name="chevron_right" size={26} /><span class="visually-hidden">Berikutnya</span>
+        </button>
+      </div>
+    </div>
+    <div class="prep__row" id="prep-row" data-row data-cursor="Geser" data-lenis-prevent tabindex="0" role="region" aria-label="Fitur persiapan pranikah, geser ke samping">
+      <ul>
+        {
+          prep.map((p) => (
+            <li class="prep__card">
+              <Phone src={p.src} alt="" width={250} />
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="after section chapter-night on-dark" aria-labelledby="after-title">
+    <div class="wrap after__grid">
+      <div class="after__copy">
+        <h2 id="after-title" class="t-h2">Setelah menikah pun, aplikasinya tetap menemani.</h2>
+        <p class="t-lead">Mahabbati tidak berhenti di hari akad. Pasangan yang menikah tetap bisa belajar dan bertanya ke asatidz.</p>
+        {BENEFITS_NOTE && <p class="after__note">{BENEFITS_NOTE}</p>}
+        <a class="btn btn--lilac" href={url("/asatidz/")}>Kenali asatidz Mahabbati</a>
+      </div>
+      <ul class="after__list">
+        <li><Icon name="menu_book" size={28} /><div><h3>Kajian rumah tangga</h3><p>Akses khusus kajian untuk pengantin baru.</p></div></li>
+        <li><Icon name="calendar_month" size={28} /><div><h3>Seminar rumah tangga</h3><p>Undangan seminar bersama asatidz.</p></div></li>
+        <li><Icon name="forum" size={28} /><div><h3>Konsultasi syariah</h3><p>Tanya langsung ke asatidz kapan pun dibutuhkan.</p></div></li>
+        <li><Icon name="explore" size={28} /><div><h3>Doa harian dan arah kiblat</h3><p>Sudah tersedia untuk semua pengguna.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="to-wo section" aria-labelledby="towo-title">
+    <div class="wrap to-wo__inner">
+      <h2 id="towo-title" class="t-h2">Sudah bertemu calon?</h2>
+      <p class="t-lead">Lanjutkan dengan khitbah, akad, dan walimah bersama Wedding Organizer Mahabbati.</p>
+      <a class="btn" href={url("/layanan/")}>Lihat layanan WO</a>
+    </div>
+  </section>
+
+  <section id="membership" class="members section chapter-mist" aria-labelledby="members-title">
+    <div class="wrap">
+      <div class="members__head">
+        <h2 id="members-title" class="t-h2">Mulai gratis, naik saat kamu siap.</h2>
+        <p class="t-lead">Harga dan masa aktif terbaru tersedia di aplikasi.</p>
+      </div>
+      <div class="members__scroll" data-lenis-prevent tabindex="0" role="region" aria-label="Tabel perbandingan membership">
+        <table class="members__table">
+          <caption class="visually-hidden">Perbandingan membership Free, Silver, dan Gold</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="visually-hidden">Fitur</span></th>
+              {
+                MEMBERSHIP.tiers.map((t) => (
+                  <th scope="col" class:list={["members__tier", `members__tier--${t.toLowerCase()}`]}>
+                    {t}
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              MEMBERSHIP.rows.map((r) => (
+                <tr>
+                  <th scope="row">{r.label}</th>
+                  {r.values.map((v) => (
+                    <td>
+                      {v === true && <Icon name="check" size={22} label="Termasuk" />}
+                      {(v === false || v === null) && (
+                        <span class="members__no">
+                          <span aria-hidden="true">–</span>
+                          <span class="visually-hidden">Tidak termasuk</span>
+                        </span>
+                      )}
+                      {typeof v === "string" && <span class="num">{cell(v)}</span>}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <a class="btn members__cta" href={PLAY_STORE_URL} rel="noopener" data-track="play:membership">Lihat harga di aplikasi</a>
+    </div>
+  </section>
+
+  <section id="faq" class="faq-sec section" aria-labelledby="faq-title">
+    <div class="wrap faq-sec__grid">
+      <h2 id="faq-title" class="t-h2">Tanya jawab.</h2>
+      <Faq items={APP_FAQ} id="faq-taaruf" />
+    </div>
+  </section>
+
+  <DownloadBlock from="taaruf" />
+</Base>
+
+<style>
+  /* ---------- Hero ---------- */
+  .t-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--s-7);
+    align-items: center;
+    padding-block: clamp(32px, 5vw, 72px) var(--s-8);
+  }
+  .t-hero__copy .t-lead {
+    margin-top: var(--s-5);
+  }
+  .t-hero__copy :global(.t-hero__stores) {
+    margin-top: var(--s-6);
+  }
+  .t-hero__note {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .t-hero__phones {
+    position: relative;
+    height: 620px;
+  }
+  .t-hero__phones :global(.t-hero__phone) {
+    position: absolute;
+  }
+  .t-hero__phones :global(.t-hero__phone--back) {
+    left: 0;
+    top: 70px;
+  }
+  .t-hero__phones :global(.t-hero__phone--front) {
+    right: 0;
+    top: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .t-hero__phones :global(.t-hero__phone--front) {
+      animation: phone-in 1100ms var(--ease-expo) 150ms both;
+    }
+    .js .t-hero__phones :global(.t-hero__phone--back) {
+      animation: phone-in 1100ms var(--ease-expo) 300ms both;
+    }
+  }
+  @keyframes phone-in {
+    from {
+      opacity: 0;
+      transform: translateY(48px) rotate(2deg);
+    }
+  }
+
+  /* ---------- Pains ---------- */
+  .pains__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-8);
+  }
+  .pains__title {
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+    align-self: start;
+  }
+  .pains__list {
+    list-style: none;
+  }
+  .pain {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--line);
+  }
+  .pain:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .pain__q {
+    font-family: var(--serif);
+    font-size: var(--t-h3);
+    line-height: 1.3;
+    color: var(--ink-2);
+  }
+  .pain__a {
+    margin-top: var(--s-3);
+    font-size: var(--t-lead);
+    color: var(--ink);
+    max-width: 44ch;
+  }
+
+  /* ---------- Anti-ghosting demo ---------- */
+  .ghost-sec__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .ghost-sec__copy .t-lead {
+    margin-top: var(--s-5);
+  }
+  .ghost-sec__hint {
+    margin-top: var(--s-5);
+    font-family: var(--serif);
+    font-style: italic;
+    color: #fff;
+  }
+  .ghost {
+    position: relative;
+    padding: clamp(20px, 3vw, 36px);
+    border-radius: 28px;
+    background: var(--ground);
+    color: var(--ink);
+    --focus: var(--accent-ink);
+  }
+  .ghost__quota {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: var(--s-4) var(--s-5);
+    border-radius: var(--r-m);
+    background: var(--brand);
+    color: var(--haze);
+  }
+  .ghost__quota strong {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: #fff;
+    line-height: 1;
+  }
+  .ghost__coin {
+    position: absolute;
+    right: 64px;
+    top: 50%;
+    width: 36px;
+    height: 36px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ghost__req {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-2) var(--s-4);
+    align-items: center;
+    margin-top: var(--s-5);
+    padding: var(--s-5);
+    border-radius: var(--r-m);
+    background: var(--paper);
+    box-shadow: inset 0 0 0 1px var(--line);
+    overflow: clip;
+  }
+  .ghost__avatar {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--lilac);
+    color: var(--night);
+    font-weight: 700;
+  }
+  .ghost__name {
+    font-weight: 600;
+  }
+  .ghost__meta {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .ghost__status {
+    grid-column: 1 / -1;
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+  .ghost__req[data-state="cancelled"] .ghost__status {
+    color: var(--ink);
+  }
+  .ghost__stamp {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    padding: 6px 12px;
+    border: 2px solid var(--brand);
+    border-radius: var(--r-s);
+    color: var(--brand);
+    font-weight: 700;
+    font-size: var(--t-small);
+    rotate: -8deg;
+    opacity: 0;
+    scale: 1.6;
+  }
+  .ghost__req[data-state="cancelled"] .ghost__stamp {
+    opacity: 1;
+    scale: 1;
+    transition: opacity 200ms ease, scale 380ms var(--ease-out);
+  }
+  .ghost__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-top: var(--s-4);
+    list-style: none;
+  }
+  .ghost__days li {
+    display: grid;
+    place-items: center;
+    height: 36px;
+    border-radius: var(--r-s);
+    background: var(--mist);
+    color: var(--ink-3);
+    font-size: var(--t-micro);
+    font-variant-numeric: tabular-nums;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+  .ghost__days li:global(.is-past) {
+    background: var(--lilac);
+    color: var(--night);
+  }
+  .ghost__controls {
+    display: grid;
+    gap: var(--s-4);
+    margin-top: var(--s-5);
+  }
+  .ghost__time {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--s-3);
+    align-items: center;
+    font-size: var(--t-small);
+  }
+  .ghost__time input {
+    accent-color: var(--brand);
+    width: 100%;
+    min-height: 32px;
+  }
+  .ghost__time input:disabled {
+    opacity: 0.45;
+  }
+  .ghost__time output {
+    min-width: 5.5em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .ghost__more {
+    display: flex;
+    gap: var(--s-3);
+  }
+  .ghost .btn--outline {
+    --btn-fg: var(--brand);
+    --btn-bg-hover: var(--haze);
+    box-shadow: inset 0 0 0 1.5px var(--brand);
+  }
+  .ghost .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .ghost .btn--lilac {
+    --btn-bg: var(--brand);
+    --btn-fg: #fff;
+    --btn-bg-hover: var(--night);
+  }
+
+  /* ---------- Privacy demo ---------- */
+  .privacy__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .privacy__facts {
+    list-style: none;
+    display: grid;
+    gap: var(--s-5);
+    margin-top: var(--s-6);
+  }
+  .privacy__facts li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-4);
+  }
+  .privacy__facts li > :global(.icon) {
+    color: var(--accent);
+    margin-top: 2px;
+  }
+  .privacy__facts h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  .privacy__facts p {
+    color: var(--ink-2);
+    max-width: 44ch;
+  }
+  .lock {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+    max-width: 380px;
+    margin-inline: auto;
+  }
+  .lock__photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r-l);
+    overflow: clip;
+    background: var(--haze);
+  }
+  .lock__photo :global(.lock__img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(22px) saturate(0.7);
+    transform: scale(1.12);
+    transition: filter 900ms var(--ease-out), transform 900ms var(--ease-out);
+  }
+  .lock:global(.is-open) .lock__photo :global(.lock__img) {
+    filter: none;
+    transform: none;
+  }
+  .lock__badge {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: var(--r-s);
+    background: var(--ground);
+    color: var(--ink);
+    font-size: var(--t-small);
+    font-weight: 600;
+  }
+  .lock__status {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+    min-height: 3em;
+  }
+  .lock__timer {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .lock__timer .num {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* ---------- Verify ---------- */
+  .verify__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .verify__phones {
+    display: flex;
+    gap: var(--s-5);
+    justify-content: center;
+  }
+  .verify__phones :global(.verify__phone--b) {
+    margin-top: var(--s-8);
+  }
+  .verify__copy .t-lead {
+    margin-top: var(--s-5);
+  }
+  .verify__steps {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+    padding-left: 1.4em;
+    font-weight: 500;
+  }
+  .verify__steps li::marker {
+    font-family: var(--serif);
+    color: var(--accent-ink);
+  }
+
+  /* ---------- AI ---------- */
+  .ai__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .ai__copy .t-lead {
+    margin-top: var(--s-5);
+  }
+  .ai__note {
+    margin-top: var(--s-5);
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--ink-2);
+  }
+  .ai__note :global(.icon) {
+    color: var(--accent);
+  }
+  .ai__grid :global(.ai__phone) {
+    justify-self: center;
+  }
+
+  /* ---------- Guide ---------- */
+  .guide__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-8);
+  }
+  .guide__aside {
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+    align-self: start;
+  }
+  .guide__aside .t-lead {
+    margin-top: var(--s-4);
+  }
+  .guide__rules {
+    margin-top: var(--s-6);
+    padding: var(--s-5);
+    border-radius: var(--r-m);
+    background: var(--paper);
+  }
+  .guide__rules h3 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .guide__rules ul {
+    margin-top: var(--s-3);
+    padding-left: 1.2em;
+    display: grid;
+    gap: var(--s-2);
+    color: var(--ink-2);
+    font-size: var(--t-small);
+  }
+  .guide__steps {
+    list-style: none;
+  }
+  .guide__step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: var(--s-4);
+    padding-block: var(--s-5);
+    border-top: 1px solid var(--line);
+  }
+  .guide__step:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .guide__num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    line-height: 1.1;
+    color: var(--accent);
+  }
+  .guide__step p {
+    margin-top: var(--s-2);
+    color: var(--ink-2);
+    max-width: 48ch;
+  }
+
+  /* ---------- Pranikah drag row ---------- */
+  .prep__head {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr) auto;
+    gap: var(--s-5) var(--s-7);
+    align-items: end;
+  }
+  .prep__nav {
+    display: flex;
+    gap: var(--s-2);
+  }
+  .prep__btn {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--haze);
+    color: var(--brand);
+    transition: background-color var(--t-hover) ease, opacity var(--t-hover) ease;
+  }
+  .prep__btn:hover {
+    background: var(--lilac);
+  }
+  .prep__btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .prep__row {
+    margin-top: var(--s-7);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    cursor: grab;
+  }
+  .prep__row::-webkit-scrollbar {
+    display: none;
+  }
+  .prep__row:global(.is-dragging) {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+  .prep__row ul {
+    display: flex;
+    gap: var(--s-6);
+    list-style: none;
+    padding-inline: max(var(--gutter), calc((100vw - var(--page)) / 2));
+    padding-bottom: var(--s-6);
+    width: max-content;
+  }
+  .prep__card {
+    width: 270px;
+    scroll-snap-align: start;
+    scroll-margin-left: max(var(--gutter), calc((100vw - var(--page)) / 2));
+    user-select: none;
+  }
+  .prep__card :global(img) {
+    pointer-events: none;
+  }
+  .prep__card h3 {
+    margin-top: var(--s-5);
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.25rem;
+  }
+  .prep__card p {
+    margin-top: var(--s-2);
+    color: var(--ink-2);
+    font-size: var(--t-small);
+  }
+
+  /* ---------- After marriage ---------- */
+  .after__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .after__copy {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+  }
+  .after__note {
+    font-size: var(--t-small);
+    color: var(--lilac);
+  }
+  .after__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+  .after__list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-3);
+  }
+  .after__list li > :global(.icon) {
+    color: var(--lilac);
+  }
+  .after__list h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .after__list p {
+    color: var(--lilac);
+    font-size: var(--t-small);
+  }
+  .to-wo__inner {
+    display: grid;
+    gap: var(--s-4);
+    justify-items: start;
+  }
+  @media (max-width: 900px) {
+    .after__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .after__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* ---------- Membership ---------- */
+  .members__head {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--s-5) var(--s-7);
+    align-items: end;
+  }
+  .members__scroll {
+    margin-top: var(--s-7);
+    overflow-x: auto;
+    border-radius: var(--r-l);
+    background: var(--paper);
+  }
+  .members__table {
+    width: 100%;
+    min-width: 620px;
+    border-collapse: collapse;
+  }
+  .members__table th,
+  .members__table td {
+    padding: var(--s-4) var(--s-5);
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .members__table tbody tr:last-child th,
+  .members__table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .members__table tbody th {
+    text-align: left;
+    font-weight: 500;
+  }
+  .members__table td {
+    color: var(--ink);
+    font-weight: 600;
+    width: 18%;
+  }
+  .members__table td :global(.icon) {
+    margin-inline: auto;
+    color: var(--success);
+  }
+  .members__no {
+    color: var(--ink-3);
+  }
+  .members__tier {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.375rem;
+  }
+  .members__tier--gold {
+    color: var(--gold-ink);
+  }
+  .members__table thead th {
+    background: var(--paper);
+    padding-block: var(--s-5);
+  }
+  .members__cta {
+    margin-top: var(--s-6);
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-sec__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--s-8);
+  }
+
+  @media (max-width: 900px) {
+    .t-hero,
+    .pains__grid,
+    .ghost-sec__grid,
+    .privacy__grid,
+    .verify__grid,
+    .ai__grid,
+    .guide__grid,
+    .members__head,
+    .faq-sec__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-6);
+    }
+    .t-hero__phones {
+      height: 470px;
+      max-width: 420px;
+      width: 100%;
+    }
+    .t-hero__phones :global(.t-hero__phone--back) {
+      width: 200px;
+    }
+    .t-hero__phones :global(.t-hero__phone--front) {
+      width: 230px;
+    }
+    .pains__title,
+    .guide__aside {
+      position: static;
+    }
+    .verify__grid .verify__phones {
+      order: 2;
+    }
+    .verify__phones :global(.phone) {
+      width: 46%;
+    }
+    .prep__head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .ghost__time {
+      grid-template-columns: 1fr auto;
+    }
+    .ghost__time label {
+      grid-column: 1 / -1;
+    }
+    .ghost__more {
+      flex-wrap: wrap;
+    }
+  }
+  @media (max-width: 640px) {
+    .members__table {
+      min-width: 0;
+      table-layout: fixed;
+    }
+    .members__table th,
+    .members__table td {
+      padding: var(--s-3) 6px;
+      font-size: var(--t-small);
+    }
+    .members__table tbody th {
+      width: 40%;
+      padding-left: var(--s-4);
+    }
+    .members__table td {
+      width: 20%;
+    }
+    .members__tier {
+      font-size: 1.0625rem;
+    }
+  }
+</style>
+
+<script>
+  import "../scripts/ghost.ts";
+  import "../scripts/photo-lock.ts";
+  import "../scripts/drag-row.ts";
+</script>

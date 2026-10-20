@@ -1,0 +1,87 @@
+---
+import Icon from "./Icon.astro";
+import type { Story } from "../data/people";
+import { needLabel } from "../data/packages";
+
+interface Props {
+  story: Story;
+}
+const { story } = Astro.props;
+const kind = story.type === "app" ? "Aplikasi ta'aruf" : story.type === "kelas" ? "Kelas pranikah" : story.need ? needLabel(story.need) : "Wedding Organizer";
+---
+
+<figure class:list={["story", story.placeholder && "story--placeholder"]} data-placeholder={story.placeholder ? "" : undefined}>
+  {story.placeholder && <span class="story__flag">Placeholder, tidak tampil di situs live</span>}
+  <p class="story__kind">{kind}</p>
+  {
+    story.rating && (
+      <p class="story__rating" role="img" aria-label={`Rating ${story.rating} dari 5`}>
+        {Array.from({ length: story.rating }, () => (
+          <Icon name="star" fill size={18} />
+        ))}
+      </p>
+    )
+  }
+  <blockquote>
+    <p>"{story.quote}"</p>
+  </blockquote>
+  <figcaption>
+    <strong>{story.by}</strong>
+    {story.meta && <span>{story.meta}</span>}
+    <span class="story__source">{story.source}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .story {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--s-3);
+    padding: var(--s-6);
+    border-radius: var(--r-l);
+    background: var(--paper);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .story--placeholder {
+    background: repeating-linear-gradient(-45deg, var(--paper) 0 14px, var(--mist) 14px 28px);
+    box-shadow: inset 0 0 0 2px var(--lilac);
+  }
+  .story__flag {
+    justify-self: start;
+    padding: 2px 8px;
+    border-radius: var(--r-s);
+    background: var(--brand);
+    color: #fff;
+    font-size: var(--t-micro);
+    font-weight: 600;
+  }
+  .story__kind {
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+  .story__rating {
+    display: flex;
+    gap: 2px;
+    color: var(--gold-ink);
+  }
+  .story blockquote p {
+    font-family: var(--serif);
+    font-size: 1.1875rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .story figcaption {
+    display: grid;
+    gap: 2px;
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .story figcaption strong {
+    color: var(--ink);
+  }
+  .story__source {
+    font-size: var(--t-micro);
+  }
+</style>

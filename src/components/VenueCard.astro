@@ -1,0 +1,128 @@
+---
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import { photo } from "../data/images";
+import { type Venue, venueTypeLabel, VENUE_TYPES } from "../data/venues";
+import { rupiahShort, url } from "../data/site";
+
+interface Props {
+  venue: Venue;
+  sizes?: string;
+  headingLevel?: "h2" | "h3";
+}
+const { venue, sizes = "(max-width: 720px) 92vw, (max-width: 1100px) 46vw, 30vw", headingLevel = "h3" } = Astro.props;
+const icon = VENUE_TYPES.find((t) => t.id === venue.type)?.icon ?? "location_city";
+const H = headingLevel;
+const cap = Math.max(venue.capacity.akad ?? 0, venue.capacity.walimah ?? 0);
+---
+
+<article class="vcard" data-vcard data-type={venue.type} data-city={venue.city} data-cap={cap}>
+  <figure class="vcard__photo photo">
+    <Image src={photo(venue.photo)} alt="" widths={[360, 540, 720, 960]} sizes={sizes} />
+    {venue.placeholder && <span class="chip chip--sample">Data contoh</span>}
+  </figure>
+  <div class="vcard__body">
+    <p class="vcard__type"><Icon name={icon} size={18} />{venueTypeLabel(venue.type)}, {venue.city}</p>
+    <H class="vcard__name">
+      <a href={url(`/tempat/${venue.slug}/`)} class="vcard__link">{venue.name}</a>
+    </H>
+    <dl class="vcard__meta">
+      {
+        venue.capacity.akad && (
+          <div>
+            <dt>akad</dt>
+            <dd class="num">{venue.capacity.akad} tamu</dd>
+          </div>
+        )
+      }
+      {
+        venue.capacity.walimah && (
+          <div>
+            <dt>walimah</dt>
+            <dd class="num">{venue.capacity.walimah} tamu</dd>
+          </div>
+        )
+      }
+      <div>
+        <dt>mulai</dt>
+        <dd class="num">{rupiahShort(venue.priceFrom)}</dd>
+      </div>
+    </dl>
+  </div>
+</article>
+
+<style>
+  .vcard {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border-radius: var(--r-l);
+    background: var(--paper);
+    overflow: clip;
+    box-shadow: inset 0 0 0 1px var(--line);
+    transition: box-shadow var(--t-ui) ease;
+  }
+  .vcard:hover {
+    box-shadow: var(--shadow-float);
+  }
+  .vcard:focus-within {
+    outline: 2.5px solid var(--focus);
+    outline-offset: 3px;
+  }
+  .vcard__photo {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    border-radius: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .vcard__photo :global(img) {
+      transition: transform 900ms var(--ease-expo);
+    }
+    .vcard:hover .vcard__photo :global(img) {
+      transform: scale(1.04);
+    }
+  }
+  .vcard__body {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-5);
+  }
+  .vcard__type {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+  .vcard__name {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.375rem;
+    line-height: 1.25;
+  }
+  .vcard__link {
+    text-decoration: none;
+  }
+  .vcard__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .vcard__link:focus-visible {
+    outline: none;
+  }
+  .vcard__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-5);
+    margin-top: var(--s-2);
+  }
+  .vcard__meta dt {
+    font-size: var(--t-micro);
+    color: var(--ink-2);
+  }
+  .vcard__meta dd {
+    font-weight: 600;
+  }
+</style>

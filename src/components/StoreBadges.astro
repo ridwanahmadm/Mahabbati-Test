@@ -1,0 +1,23 @@
+---
+import Icon from "./Icon.astro";
+import { PLAY_STORE_URL, APP_STORE_URL } from "../data/site";
+
+interface Props {
+  class?: string;
+  /** Analytics hint: which section the click came from. */
+  from?: string;
+}
+const { class: cls, from = "page" } = Astro.props;
+---
+
+<div class:list={["stores", cls]}>
+  <a class="store" href={PLAY_STORE_URL} rel="noopener" data-track={`play:${from}`}>
+    <Icon name="google-play" size={26} />
+    <span><small>Dapatkan di</small> <strong>Google Play</strong></span>
+  </a>
+  <!-- GANTI: href App Store diatur di src/data/site.ts (APP_STORE_URL). -->
+  <a class="store" href={APP_STORE_URL} rel="noopener" data-track={`appstore:${from}`}>
+    <Icon name="apple" size={26} />
+    <span><small>Unduh di</small> <strong>App Store</strong></span>
+  </a>
+</div>

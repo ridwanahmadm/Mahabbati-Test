@@ -1,0 +1,124 @@
+---
+import Icon from "./Icon.astro";
+import { BENEFITS, BENEFITS_NOTE } from "../data/content";
+
+interface Props {
+  headingId?: string;
+  title?: string;
+  lead?: string;
+}
+const {
+  headingId = "benefits-title",
+  title = "Benefit sebelum dan setelah menikah.",
+  lead = "Untuk pengguna aplikasi dan klien Wedding Organizer Mahabbati.",
+} = Astro.props;
+const groups = [
+  { phase: "Sebelum", label: "Sebelum menikah" },
+  { phase: "Setelah", label: "Setelah menikah" },
+] as const;
+---
+
+<div class="benefits">
+  <div class="benefits__head">
+    <h2 id={headingId} class="t-h2">{title}</h2>
+    <p class="t-lead">{lead}</p>
+    {BENEFITS_NOTE && <p class="sample-note"><Icon name="info" size={20} />{BENEFITS_NOTE}</p>}
+  </div>
+  <div class="benefits__groups">
+    {
+      groups.map((g) => (
+        <section class="benefits__group" aria-label={g.label}>
+          <h3 class="benefits__phase">{g.label}</h3>
+          <ul>
+            {BENEFITS.filter((b) => b.phase === g.phase).map((b) => (
+              <li>
+                <Icon name={b.icon} size={26} />
+                <div>
+                  <p class="benefits__title">{b.title}</p>
+                  <p>{b.body}</p>
+                  <p class="benefits__for">{b.for}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .benefits {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--s-8);
+  }
+  .benefits__head {
+    display: grid;
+    align-content: start;
+    gap: var(--s-4);
+  }
+  .benefits__groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+  .benefits__phase {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.375rem;
+    padding-bottom: var(--s-3);
+    border-bottom: 2px solid var(--lilac);
+  }
+  .benefits ul {
+    list-style: none;
+    display: grid;
+    gap: var(--s-5);
+    margin-top: var(--s-5);
+  }
+  .benefits li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-3);
+  }
+  .benefits li > :global(.icon) {
+    color: var(--accent);
+  }
+  .benefits__title {
+    font-weight: 600;
+  }
+  .benefits li p:not(.benefits__title) {
+    color: var(--ink-2);
+    font-size: var(--t-small);
+  }
+  .benefits__for {
+    margin-top: 2px;
+    font-size: var(--t-micro) !important;
+    color: var(--accent-ink) !important;
+  }
+  :global(.chapter-night) .benefits li p:not(.benefits__title) {
+    color: var(--lilac);
+  }
+  :global(.chapter-night) .benefits__for {
+    color: var(--haze) !important;
+  }
+  :global(.chapter-night) .benefits__title,
+  :global(.chapter-night) .benefits__phase {
+    color: #fff;
+  }
+  :global(.chapter-night) .sample-note {
+    background: rgba(201, 207, 242, 0.14);
+    color: var(--haze);
+  }
+  @media (max-width: 900px) {
+    .benefits {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-6);
+    }
+  }
+  @media (max-width: 640px) {
+    .benefits__groups {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

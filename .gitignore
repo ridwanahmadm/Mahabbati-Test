@@ -1,0 +1,5 @@
+.DS_Store
+.astro/
+/_unused-assets/
+/dist/
+node_modules/

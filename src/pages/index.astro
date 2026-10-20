@@ -1,0 +1,553 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import Finder from "../components/Finder.astro";
+import NeedIndex from "../components/NeedIndex.astro";
+import Journey from "../components/Journey.astro";
+import PackageCard from "../components/PackageCard.astro";
+import VenueCard from "../components/VenueCard.astro";
+import UstadzCard from "../components/UstadzCard.astro";
+import CrossBand from "../components/CrossBand.astro";
+import Faq from "../components/Faq.astro";
+import { Image } from "astro:assets";
+import { photo } from "../data/images";
+import { JOURNEY, SYARI_STANDARDS, WO_FAQ } from "../data/content";
+import { PACKAGES } from "../data/packages";
+import { VENUES } from "../data/venues";
+import { ASATIDZ, visibleStories } from "../data/people";
+import { PROOF, WA, waLink, WO_GREETING, url } from "../data/site";
+
+const featured = PACKAGES.filter((p) => p.featured);
+const stories = visibleStories((s) => s.type === "wo" || s.id === "dimas").slice(0, 3);
+const wa = waLink(WA.wo.number, WO_GREETING);
+---
+
+<Base
+  title="Mahabbati | Wedding organizer syar'i, dari khitbah sampai walimah"
+  description="Paket khitbah, akad, akad di masjid, walimah, dan tempat mitra. Wedding organizer syar'i dengan asatidz yang menemani sebelum, saat, dan setelah akad."
+  current="home"
+>
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div class="hero__copy">
+      <h1 id="hero-title" class="t-display hero__title">Pernikahan syar'i,<br /> disiapkan dengan tenang.</h1>
+      <p class="t-lead">
+        Khitbah, akad, walimah, sampai tempat mitra. Tim Wedding Organizer yang sudah mendampingi {PROOF.couples} pasangan, dan
+        asatidz yang menemani sebelum, saat, dan setelah akad.
+      </p>
+      <Finder id="hero-finder" class="hero__finder" />
+      <p class="hero__alt">
+        Belum bertemu calon? <a class="link" href={url("/aplikasi/")}>Mulai ta'aruf di aplikasi Mahabbati</a>
+      </p>
+    </div>
+    <figure class="hero__photo lens" data-lens data-lens-rest="50,38,26">
+      <Image
+        class="lens__mono"
+        src={photo("hero-walimah")}
+        alt="Pengantin Sunda bersiger dan berhias roncean melati, bersanding dengan pengantin pria berpeci putih."
+        widths={[640, 960, 1280, 1600]}
+        sizes="(max-width: 900px) 92vw, 44vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <Image class="lens__color" src={photo("hero-walimah")} alt="" widths={[640, 960, 1280, 1600]} sizes="(max-width: 900px) 92vw, 44vw" loading="eager" />
+    </figure>
+  </section>
+
+  <section class="needs section" aria-labelledby="needs-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="needs-title" class="t-h2">Mulai dari yang kamu butuhkan.</h2>
+        <p class="t-lead">Pesan satu acara saja, tempatnya saja, atau serahkan semuanya ke satu tim.</p>
+      </div>
+      <NeedIndex />
+    </div>
+  </section>
+
+  <Journey
+    title="Kami menemani sebelum, saat, dan setelah akad."
+    lead="Hari walimah hanya sehari, pernikahannya seumur hidup. Karena itu Mahabbati menyiapkan acaranya, dan juga menyiapkan kalian."
+    stages={JOURNEY}
+    tall={["khitbah", "rumah-tangga"]}
+    close="Dari khitbah sampai rumah tangga, di satu tempat."
+    doors={[
+      { href: url("/layanan/"), label: "Lihat semua layanan" },
+      { href: url("/asatidz/"), label: "Kenali asatidz", outline: true },
+    ]}
+  />
+
+  <section class="ust section chapter-night on-dark" aria-labelledby="ust-title">
+    <div class="wrap ust__grid">
+      <div class="ust__copy">
+        <h2 id="ust-title" class="t-h2">Didampingi asatidz Mahabbati.</h2>
+        <p class="t-lead">
+          Klien Paket Akad dan Paket Lengkap mendapat akses kelas pranikah dan nasihat pernikahan bersama asatidz, langsung di
+          aplikasi Mahabbati.
+        </p>
+        <a class="btn btn--lilac" href={url("/asatidz/")}>Kenali asatidz dan kelasnya</a>
+      </div>
+      <ul class="ust__list">
+        {
+          ASATIDZ.map((u) => (
+            <li>
+              <UstadzCard ustadz={u} compact />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="feat section" aria-labelledby="feat-title">
+    <div class="wrap row-head">
+      <div>
+        <h2 id="feat-title" class="t-h2">Paket pilihan.</h2>
+        <p class="t-lead">Semua harga adalah harga mulai. Buka paketnya untuk menghitung estimasi sesuai jumlah tamu.</p>
+      </div>
+      <div class="row-nav">
+        <button type="button" class="round-btn" data-row-prev aria-controls="feat-row"><Icon name="chevron_left" size={26} /><span class="visually-hidden">Sebelumnya</span></button>
+        <button type="button" class="round-btn" data-row-next aria-controls="feat-row"><Icon name="chevron_right" size={26} /><span class="visually-hidden">Berikutnya</span></button>
+      </div>
+    </div>
+    <div class="hrow" id="feat-row" data-row data-cursor="Geser" data-lenis-prevent tabindex="0" role="region" aria-label="Paket pilihan, geser ke samping">
+      <ul>
+        {
+          featured.map((p) => (
+            <li class="hrow__item">
+              <PackageCard pkg={p} sizes="340px" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="wrap row-foot">
+      <a class="btn btn--outline" href={url("/layanan/")}>Lihat semua layanan</a>
+    </div>
+  </section>
+
+  <section class="venues section chapter-mist" aria-labelledby="venues-title">
+    <div class="wrap row-head">
+      <div>
+        <h2 id="venues-title" class="t-h2">Tempat mitra, siap dipesan.</h2>
+        <p class="t-lead">Masjid, gedung, taman, sampai villa keluarga. Pesan tempatnya saja, atau sekalian dengan paket WO.</p>
+      </div>
+      <div class="row-nav">
+        <button type="button" class="round-btn" data-row-prev aria-controls="venue-row"><Icon name="chevron_left" size={26} /><span class="visually-hidden">Sebelumnya</span></button>
+        <button type="button" class="round-btn" data-row-next aria-controls="venue-row"><Icon name="chevron_right" size={26} /><span class="visually-hidden">Berikutnya</span></button>
+      </div>
+    </div>
+    <div class="hrow" id="venue-row" data-row data-cursor="Geser" data-lenis-prevent tabindex="0" role="region" aria-label="Tempat mitra, geser ke samping">
+      <ul>
+        {
+          VENUES.map((v) => (
+            <li class="hrow__item">
+              <VenueCard venue={v} sizes="340px" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="wrap row-foot">
+      <a class="btn btn--outline" href={url("/tempat/")}>Lihat semua tempat</a>
+    </div>
+  </section>
+
+  <section class="std section" aria-labelledby="std-title">
+    <div class="wrap std__grid">
+      <figure class="std__photo photo" data-reveal="mask">
+        <Image src={photo("wo-mua")} alt="Perias wanita merapikan kerudung pengantin berhias roncean melati." widths={[480, 720, 960]} sizes="(max-width: 900px) 80vw, 36vw" />
+      </figure>
+      <div>
+        <h2 id="std-title" class="t-h2">Standar syar'i yang bisa kamu baca.</h2>
+        <ol class="std__list">
+          {
+            SYARI_STANDARDS.map((s) => (
+              <li>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+        <a class="link std__more" href={url("/tentang/")}>Tentang Mahabbati dan standar syar'i kami</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="proof section chapter-night on-dark" aria-labelledby="proof-title">
+    <div class="wrap proof__grid">
+      <div class="proof__copy">
+        <h2 id="proof-title" class="proof__big">
+          <span class="num">{PROOF.couples}</span>
+          <span class="proof__big-label">pasangan sudah menikah bersama Wedding Organizer Mahabbati.</span>
+        </h2>
+        <dl class="proof__facts">
+          <div>
+            <dt>Rating Google Play</dt>
+            <dd><span class="num">{PROOF.rating}</span><Icon name="star" fill size={20} /></dd>
+          </div>
+          <div>
+            <dt>Komunitas Instagram</dt>
+            <dd class="num">{PROOF.instagram}</dd>
+          </div>
+          <div>
+            <dt>Kajian offline Jakarta</dt>
+            <dd>Tiket habis</dd>
+          </div>
+        </dl>
+        <a class="btn btn--lilac proof__cta" href={url("/cerita/")}>Baca cerita pasangan</a>
+      </div>
+      <ul class="proof__stories">
+        {
+          stories.map((s) => (
+            <li>
+              <figure class="proof__story">
+                <blockquote>
+                  <p>"{s.quote}"</p>
+                </blockquote>
+                <figcaption>
+                  {s.by}, {s.source}
+                </figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CrossBand
+    id="fork"
+    title="Kamu sedang di tahap mana?"
+    left={{
+      title: "Sudah bertemu calon.",
+      body: "Rencanakan khitbah, akad, dan walimah bersama tim kami, lengkap dengan kelas pranikah.",
+      cta: "Lihat layanan",
+      href: url("/layanan/"),
+      photo: "couple-white",
+      alt: "Pengantin berbusana putih saling mendekatkan kening di bawah pepohonan.",
+    }}
+    right={{
+      title: "Belum bertemu calon.",
+      body: "Mulai ta'aruf yang aman di aplikasi: profil terverifikasi, dan kuota kembali bila tak dibalas.",
+      cta: "Kenali aplikasinya",
+      href: url("/aplikasi/"),
+      photo: "hero-taaruf",
+      alt: "Seorang muslimah berkerudung biru muda dan seorang pria berdiri di balkon, menatap ke kejauhan.",
+      track: "app:home-fork",
+    }}
+  />
+
+  <section class="home-faq section" aria-labelledby="hfaq-title">
+    <div class="wrap home-faq__grid">
+      <div>
+        <h2 id="hfaq-title" class="t-h2">Tanya jawab.</h2>
+        <p class="t-lead">Belum terjawab? Tim WO membalas lewat WhatsApp.</p>
+        <a class="btn btn--wa" href={wa} rel="noopener" data-track="wa:home-faq"><Icon name="whatsapp" size={20} />Konsultasi via WhatsApp</a>
+      </div>
+      <Faq items={WO_FAQ} id="faq-home" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--s-8);
+    align-items: center;
+    padding-block: clamp(24px, 4vw, 56px) var(--s-8);
+    min-height: calc(100svh - var(--header-h));
+    max-height: 1000px;
+  }
+  .hero__title {
+    font-size: clamp(2.25rem, 1.1rem + 2.3vw, 3.5rem);
+  }
+  .hero__copy .t-lead {
+    margin-top: var(--s-5);
+  }
+  .hero__copy :global(.hero__finder) {
+    margin-top: var(--s-6);
+  }
+  .hero__alt {
+    margin-top: var(--s-5);
+    color: var(--ink-2);
+  }
+  .hero__photo {
+    height: min(78svh, 760px);
+    min-height: 460px;
+  }
+  .hero__photo :global(img) {
+    object-position: 60% 40%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .hero__photo {
+      animation: hero-open 1200ms var(--ease-in-out) 100ms both;
+    }
+  }
+  @keyframes hero-open {
+    from {
+      clip-path: inset(0 0 0 100% round var(--r-l));
+    }
+    to {
+      clip-path: inset(0 0 0 0 round var(--r-l));
+    }
+  }
+
+  .sec-head,
+  .row-head {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--s-5) var(--s-7);
+    align-items: end;
+    margin-bottom: var(--s-7);
+  }
+  .row-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .row-head .t-lead {
+    margin-top: var(--s-3);
+  }
+  .row-nav {
+    display: flex;
+    gap: var(--s-2);
+  }
+  .round-btn {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--haze);
+    color: var(--brand);
+    transition: background-color var(--t-hover) ease, opacity var(--t-hover) ease;
+  }
+  .round-btn:hover {
+    background: var(--lilac);
+  }
+  .round-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .hrow {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    cursor: grab;
+  }
+  .hrow::-webkit-scrollbar {
+    display: none;
+  }
+  .hrow:global(.is-dragging) {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+  .hrow ul {
+    display: flex;
+    gap: var(--s-5);
+    list-style: none;
+    padding-inline: max(var(--gutter), calc((100vw - var(--page)) / 2));
+    padding-block: 4px var(--s-6);
+    width: max-content;
+  }
+  .hrow__item {
+    width: 340px;
+    display: grid;
+    scroll-snap-align: start;
+    scroll-margin-left: max(var(--gutter), calc((100vw - var(--page)) / 2));
+    user-select: none;
+  }
+  .hrow__item :global(img) {
+    pointer-events: none;
+  }
+  .row-foot {
+    margin-top: var(--s-4);
+  }
+
+  .ust__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .ust__copy {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+  }
+  .ust__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+
+  .std__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .std__photo {
+    aspect-ratio: 4 / 5;
+  }
+  .std__list {
+    list-style: none;
+    counter-reset: std;
+    margin-top: var(--s-6);
+    display: grid;
+    gap: var(--s-5);
+  }
+  .std__list li {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    column-gap: var(--s-3);
+    counter-increment: std;
+  }
+  .std__list li::before {
+    content: counter(std);
+    grid-row: span 2;
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    line-height: 1.2;
+    color: var(--accent);
+  }
+  .std__list h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  .std__list p {
+    color: var(--ink-2);
+    max-width: 48ch;
+  }
+  .std__more {
+    display: inline-block;
+    margin-top: var(--s-6);
+  }
+
+  .proof__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--s-8);
+    align-items: start;
+  }
+  .proof__big {
+    display: grid;
+    gap: var(--s-3);
+    font-weight: 400;
+  }
+  .proof__big .num {
+    font-family: var(--serif);
+    font-size: clamp(5rem, 3rem + 8vw, 10rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: #fff;
+  }
+  .proof__big-label {
+    font-family: var(--serif);
+    font-size: var(--t-h3);
+    line-height: 1.3;
+    color: var(--lilac);
+    max-width: 22ch;
+  }
+  .proof__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-5) var(--s-8);
+    margin-top: var(--s-7);
+    padding-top: var(--s-6);
+    border-top: 1px solid rgba(201, 207, 242, 0.24);
+  }
+  .proof__facts dt {
+    font-size: var(--t-small);
+    color: var(--lilac);
+  }
+  .proof__facts dd {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    color: #fff;
+  }
+  .proof__facts dd :global(.icon) {
+    color: var(--gold);
+  }
+  .proof__cta {
+    margin-top: var(--s-7);
+  }
+  .proof__stories {
+    list-style: none;
+    display: grid;
+    gap: var(--s-6);
+  }
+  .proof__story p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: var(--t-lead);
+    line-height: 1.55;
+    color: #fff;
+  }
+  .proof__story figcaption {
+    margin-top: var(--s-3);
+    font-size: var(--t-small);
+    color: var(--lilac);
+  }
+
+  .home-faq__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--s-8);
+  }
+  .home-faq__grid > div:first-child {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--s-4);
+  }
+
+  @media (max-width: 1000px) {
+    .ust__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 900px) {
+    .hero,
+    .sec-head,
+    .std__grid,
+    .proof__grid,
+    .home-faq__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-6);
+    }
+    .hero {
+      min-height: 0;
+      max-height: none;
+    }
+    .hero__photo {
+      height: 440px;
+      min-height: 0;
+    }
+    .row-head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .hrow__item {
+      width: min(300px, 82vw);
+    }
+    .std__photo {
+      max-width: 420px;
+    }
+  }
+  @media (max-width: 640px) {
+    .ust__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
+
+<script>
+  import "../scripts/lens.ts";
+  import "../scripts/drag-row.ts";
+</script>

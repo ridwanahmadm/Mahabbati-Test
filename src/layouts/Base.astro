@@ -1,0 +1,76 @@
+---
+import { url } from "../data/site";
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import type { NavKey } from "../data/site";
+import Footer from "../components/Footer.astro";
+import { getImage } from "astro:assets";
+import { photo } from "../data/images";
+import { PLAY_STORE_URL, INSTAGRAM_URL, EMAIL } from "../data/site";
+import serifWoff2 from "@fontsource/libre-baskerville/files/libre-baskerville-latin-400-normal.woff2?url";
+import sansWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+
+interface Props {
+  title: string;
+  description: string;
+  current?: NavKey;
+  ogImage?: string;
+  jsonLd?: Record<string, unknown>[];
+}
+const { title, description, current = "home", ogImage = "hero-walimah", jsonLd = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = await getImage({ src: photo(ogImage), width: 1200, height: 630, fit: "cover", format: "jpg" });
+const ogUrl = new URL(og.src, Astro.site);
+
+const org = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Mahabbati",
+  url: "https://mahabbati.com",
+  email: EMAIL,
+  sameAs: [INSTAGRAM_URL, PLAY_STORE_URL],
+};
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#FAFAFC" />
+    <link rel="icon" href={url("/favicon.svg")} type="image/svg+xml" />
+    <link rel="preload" href={serifWoff2} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={sansWoff2} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:site_name" content="Mahabbati" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify([org, ...jsonLd])} />
+  </head>
+  <body>
+    <a class="skip-link" href="#konten">Langsung ke konten</a>
+    <Header current={current} />
+    <main id="konten" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <div class="cursor-label" aria-hidden="true" data-cursor-label></div>
+    <script>
+      import "../scripts/base.ts";
+    </script>
+  </body>
+</html>

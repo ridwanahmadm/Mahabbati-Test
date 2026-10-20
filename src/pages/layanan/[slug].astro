@@ -1,0 +1,868 @@
+---
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import { Image } from "astro:assets";
+import { photo } from "../../data/images";
+import UstadzCard from "../../components/UstadzCard.astro";
+import VenueCard from "../../components/VenueCard.astro";
+import PackageCard from "../../components/PackageCard.astro";
+import { PACKAGES, ADDONS, RUNDOWN, estimate, itemsFor, needLabel, type Package, type AddonId } from "../../data/packages";
+import { VENUES } from "../../data/venues";
+import { ASATIDZ } from "../../data/people";
+import { WA, waLink, rupiah, rupiahShort, url } from "../../data/site";
+
+export function getStaticPaths() {
+  return PACKAGES.map((p) => ({ params: { slug: p.slug }, props: { pkg: p } }));
+}
+
+interface Props {
+  pkg: Package;
+}
+const { pkg } = Astro.props;
+const v0 = pkg.variants[0];
+const multi = pkg.variants.length > 1;
+const addonIds = [...new Set(pkg.variants.flatMap((v) => v.addons))] as AddonId[];
+const others = [
+  ...PACKAGES.filter((p) => p.slug !== pkg.slug && p.need === pkg.need),
+  ...PACKAGES.filter((p) => p.slug !== pkg.slug && p.need !== pkg.need && p.featured),
+].slice(0, 3);
+const venues = VENUES.filter((v) => v.needs.includes(pkg.need)).slice(0, 3);
+const firstTotal = estimate(v0, v0.guests.included);
+const waText = (variantName: string, guests: number, total: number) =>
+  `Assalamu'alaikum, Tim WO Mahabbati. Saya tertarik dengan paket ${pkg.name}${multi ? ` (${variantName})` : ""}.\n` +
+  `Perkiraan tamu: ${guests} orang\nEstimasi dari website: ${rupiah(total)}\nBoleh dibantu jadwal konsultasinya?`;
+const waHref = waLink(WA.wo.number, waText(v0.name, v0.guests.included, firstTotal));
+
+const data = {
+  name: pkg.name,
+  multi,
+  waNumber: WA.wo.number,
+  variants: pkg.variants.map((v) => ({
+    id: v.id,
+    name: v.name,
+    price: v.price,
+    guests: v.guests,
+    extra: v.extra,
+    addons: v.addons,
+  })),
+  addons: Object.fromEntries(addonIds.map((id) => [id, ADDONS[id]])),
+};
+
+const offer = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: `Paket ${pkg.name}, Wedding Organizer Mahabbati`,
+  description: pkg.summary,
+  brand: { "@type": "Brand", name: "Mahabbati" },
+  offers: pkg.variants.map((v) => ({ "@type": "Offer", name: v.name, priceCurrency: "IDR", price: v.price })),
+};
+---
+
+<Base
+  title={`${pkg.name} | Wedding Organizer Mahabbati`}
+  description={`${pkg.promise} ${pkg.forWho} Mulai ${rupiahShort(pkg.priceFrom)}.`}
+  current="layanan"
+  ogImage={pkg.photo}
+  jsonLd={[offer]}
+>
+  <nav class="crumbs wrap" aria-label="Breadcrumb">
+    <ol>
+      <li><a href={url("/layanan/")}>Layanan</a></li>
+      <li><a href={url(`/layanan/?kebutuhan=${pkg.need}`)}>{needLabel(pkg.need)}</a></li>
+      <li aria-current="page">{pkg.name}</li>
+    </ol>
+  </nav>
+
+  <section class="pd-hero wrap" aria-labelledby="pd-title">
+    <div class="pd-hero__copy">
+      <h1 id="pd-title" class="t-display">{pkg.name}</h1>
+      <p class="pd-hero__promise">{pkg.promise}</p>
+      {
+        pkg.placeholder && (
+          <p class="sample-note pd-hero__note">
+            <Icon name="info" size={20} />
+            Harga dan rincian paket ini masih contoh dan akan diperbarui.
+          </p>
+        )
+      }
+      <p class="t-lead">{pkg.summary}</p>
+      <p class="pd-hero__price">
+        <span>mulai</span>
+        <strong class="num">{rupiah(pkg.priceFrom)}</strong>
+      </p>
+      <div class="pd-hero__ctas">
+        <a class="btn" href="#estimasi">Hitung estimasi</a>
+        <a class="btn btn--outline" href={waHref} rel="noopener" data-track={`wa:${pkg.slug}-hero`}>
+          <Icon name="whatsapp" size={20} />Tanya tim WO
+        </a>
+      </div>
+    </div>
+    <div class="pd-gallery">
+      <figure class="pd-gallery__main" data-shutter>
+        <Image
+          src={photo(pkg.gallery[0])}
+          alt={`Suasana ${pkg.name}`}
+          widths={[480, 720, 960, 1280]}
+          sizes="(max-width: 900px) 92vw, 34vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </figure>
+      {
+        pkg.gallery.slice(1, 3).map((g, i) => (
+          <figure class:list={["pd-gallery__side photo", `pd-gallery__side--${i}`]} data-reveal="mask">
+            <Image src={photo(g)} alt="" widths={[320, 480, 640]} sizes="(max-width: 900px) 44vw, 16vw" loading="eager" />
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <div class="pd-body wrap">
+    <div class="pd-main">
+      <section class="pd-sec" aria-labelledby="isi-title">
+        <h2 id="isi-title" class="t-h2">Isi paket.</h2>
+        {
+          pkg.variants.map((v, i) => (
+            <div class="pd-items" data-variant-panel={v.id} hidden={i > 0 ? true : undefined}>
+              {multi && <h3 class="pd-items__variant">Varian {v.name}, {rupiah(v.price)}, sudah termasuk {v.guests.included} tamu</h3>}
+              <ul>
+                {itemsFor(pkg, v).map((it) => (
+                  <li class="pd-item">
+                    <Icon name={it.icon} size={28} class="pd-item__icon" />
+                    <div>
+                      <p class="pd-item__label">{it.label}</p>
+                      <p class="pd-item__value">{it.value}</p>
+                      <p class="pd-item__detail">{it.detail}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="pd-sec" aria-labelledby="rundown-title">
+        <h2 id="rundown-title" class="t-h2">Contoh susunan hari H.</h2>
+        <p class="pd-sec__lead">Gambaran alur acara akad dan walimah di pagi hari. Rundown aslinya disusun bersama keluargamu.</p>
+        <ol class="rundown">
+          {
+            RUNDOWN.map((r) => (
+              <li class="rundown__row" data-reveal>
+                <time class="rundown__time num">{r.time}</time>
+                <div>
+                  <h3>{r.title}</h3>
+                  <p>{r.note}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section class="pd-sec" aria-labelledby="gal-title">
+        <div class="pd-gal__head">
+          <h2 id="gal-title" class="t-h2">Galeri suasana.</h2>
+          <div class="pd-gal__nav">
+            <button type="button" class="round-btn" data-row-prev aria-controls="pd-row">
+              <Icon name="chevron_left" size={26} /><span class="visually-hidden">Sebelumnya</span>
+            </button>
+            <button type="button" class="round-btn" data-row-next aria-controls="pd-row">
+              <Icon name="chevron_right" size={26} /><span class="visually-hidden">Berikutnya</span>
+            </button>
+          </div>
+        </div>
+        <p class="pd-sec__lead">Foto ilustrasi. Portofolio acara kami tersedia saat konsultasi.</p>
+        <div class="pd-row" id="pd-row" data-row data-cursor="Geser" data-lenis-prevent tabindex="0" role="region" aria-label="Galeri foto, geser ke samping">
+          <ul>
+            {
+              pkg.gallery.map((g) => (
+                <li class="pd-row__item photo">
+                  <Image src={photo(g)} alt="" widths={[360, 540, 720]} sizes="320px" />
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <aside id="estimasi" class="est" aria-labelledby="est-title" data-estimator>
+      <h2 id="est-title" class="est__title">Hitung estimasi</h2>
+      <form class="est__form" onsubmit="return false">
+        {
+          multi && (
+            <fieldset class="est__field">
+              <legend>Varian</legend>
+              <div class="seg">
+                {pkg.variants.map((v, i) => (
+                  <label class="seg__opt">
+                    <input type="radio" name="variant" value={v.id} checked={i === 0} data-variant />
+                    <span>
+                      {v.name}
+                      <small class="num">{rupiahShort(v.price)}</small>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )
+        }
+
+        <div class="est__field">
+          <label for="est-guests">Perkiraan jumlah tamu</label>
+          <div class="est__guests">
+            <input
+              id="est-guests-range"
+              type="range"
+              min={v0.guests.min}
+              max={v0.guests.max}
+              step={v0.guests.step}
+              value={v0.guests.included}
+              aria-label="Geser jumlah tamu"
+              data-guests-range
+            />
+            <input
+              id="est-guests"
+              type="number"
+              inputmode="numeric"
+              min={v0.guests.min}
+              max={v0.guests.max}
+              step={v0.guests.step}
+              value={v0.guests.included}
+              aria-describedby="est-guests-hint"
+              data-guests
+            />
+          </div>
+          <p id="est-guests-hint" class="est__hint" data-guests-hint>
+            Sudah termasuk {v0.guests.included} tamu.
+          </p>
+        </div>
+
+        <fieldset class="est__field">
+          <legend>Tambahan</legend>
+          <ul class="est__addons">
+            {
+              addonIds.map((id) => (
+                <li data-addon-row={id} data-for={pkg.variants.filter((v) => v.addons.includes(id)).map((v) => v.id).join(" ")}>
+                  <label>
+                    <input type="checkbox" value={id} data-addon />
+                    <span>{ADDONS[id].label}</span>
+                    <span class="num est__addon-price">+{rupiahShort(ADDONS[id].price)}</span>
+                  </label>
+                </li>
+              ))
+            }
+          </ul>
+        </fieldset>
+      </form>
+
+      <div class="est__result">
+        <p class="est__label">Estimasi awal</p>
+        <p class="est__total num" data-total aria-live="polite">{rupiah(firstTotal)}</p>
+        <ul class="est__breakdown" data-breakdown>
+          <li><span>{multi ? `${pkg.name}, ${v0.name}` : pkg.name}</span><span class="num">{rupiah(v0.price)}</span></li>
+        </ul>
+      </div>
+      <a class="btn btn--wa est__cta" href={waHref} rel="noopener" data-wa data-track={`wa:${pkg.slug}-estimator`}>
+        <Icon name="whatsapp" size={22} />Konsultasikan paket ini
+      </a>
+      <p class="est__note">
+        Estimasi awal untuk gambaran. Harga final mengikuti lokasi, menu, dan jumlah tamu, dan dituliskan di penawaran resmi.
+      </p>
+    </aside>
+  </div>
+
+  {
+    pkg.includesClass && (
+      <section class="pd-kelas section chapter-night on-dark" aria-labelledby="pdk-title">
+        <div class="wrap pd-kelas__grid">
+          <div class="pd-kelas__copy">
+            <h2 id="pdk-title" class="t-h2">Termasuk kelas pranikah bersama asatidz.</h2>
+            <p class="t-lead">
+              Setelah paket dipesan, kalian mendapat akses kelas pranikah dan nasihat pernikahan dari asatidz Mahabbati di aplikasi
+              Mahabbati.
+            </p>
+            <a class="btn btn--lilac" href={url("/asatidz/")}>Lihat isi kelasnya</a>
+          </div>
+          <ul class="pd-kelas__list">
+            {ASATIDZ.map((u) => (
+              <li>
+                <UstadzCard ustadz={u} compact />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    venues.length > 0 && (
+      <section class="pd-venues section" aria-labelledby="pdv-title">
+        <div class="wrap">
+          <div class="pd-venues__head">
+            <h2 id="pdv-title" class="t-h2">Tempat mitra yang cocok.</h2>
+            <a class="link" href={url("/tempat/")}>Semua tempat mitra</a>
+          </div>
+          <ul class="card-grid">
+            {venues.map((v) => (
+              <li>
+                <VenueCard venue={v} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="others section chapter-mist" aria-labelledby="others-title">
+    <div class="wrap">
+      <h2 id="others-title" class="t-h2">Paket lainnya.</h2>
+      <ul class="card-grid">
+        {
+          others.map((o) => (
+            <li>
+              <PackageCard pkg={o} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <div class="sticky-est" data-sticky-est hidden>
+    <div>
+      <span>Estimasi</span>
+      <strong class="num" data-sticky-total>{rupiah(firstTotal)}</strong>
+    </div>
+    <a class="btn btn--wa" href={waHref} rel="noopener" data-wa data-track={`wa:${pkg.slug}-sticky`}>Konsultasi</a>
+  </div>
+
+  <script type="application/json" id="est-data" set:html={JSON.stringify(data)} />
+</Base>
+
+<style>
+  .crumbs {
+    padding-top: var(--s-5);
+  }
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    list-style: none;
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .crumbs li + li::before {
+    content: "/";
+    margin-right: var(--s-2);
+    color: var(--ink-3);
+  }
+  .crumbs a {
+    color: var(--accent-ink);
+    text-underline-offset: 0.2em;
+  }
+
+  .pd-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: var(--s-8);
+    align-items: center;
+    padding-block: var(--s-6) var(--s-9);
+  }
+  .pd-hero__promise {
+    margin-top: var(--s-4);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: var(--t-h3);
+    color: var(--accent-ink);
+  }
+  .pd-hero__copy .t-lead {
+    margin-top: var(--s-4);
+  }
+  .pd-hero__price {
+    display: grid;
+    margin-top: var(--s-6);
+  }
+  .pd-hero__price span {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .pd-hero__price strong {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2rem, 1.6rem + 1.4vw, 2.75rem);
+  }
+  .pd-hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+  }
+  .pd-gallery {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    grid-template-rows: 1fr 1fr;
+    gap: var(--s-4);
+    height: clamp(420px, 44vw, 620px);
+  }
+  .pd-gallery__main {
+    grid-row: span 2;
+    border-radius: var(--r-l);
+    overflow: clip;
+    background: var(--haze);
+  }
+  .pd-gallery__main :global(img),
+  .pd-gallery__side :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .pd-gallery__main {
+      animation: shutter 1200ms var(--ease-in-out) 100ms both;
+    }
+    .js .pd-gallery__main :global(img) {
+      animation: settle 1400ms var(--ease-expo) 100ms both;
+    }
+  }
+  @keyframes shutter {
+    from {
+      clip-path: inset(100% 0 0 0 round var(--r-l));
+    }
+    to {
+      clip-path: inset(0 0 0 0 round var(--r-l));
+    }
+  }
+  @keyframes settle {
+    from {
+      transform: scale(1.12);
+    }
+  }
+
+  .pd-body {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: var(--s-8);
+    align-items: start;
+    padding-bottom: var(--section);
+  }
+  .pd-sec + .pd-sec {
+    margin-top: var(--s-9);
+  }
+  .pd-sec__lead {
+    margin-top: var(--s-3);
+    color: var(--ink-2);
+  }
+  .pd-items {
+    margin-top: var(--s-6);
+  }
+  .pd-items__variant {
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--ink-2);
+    margin-bottom: var(--s-4);
+  }
+  .pd-items ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--s-6);
+  }
+  .pd-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-4);
+    padding-block: var(--s-5);
+    border-top: 1px solid var(--line);
+  }
+  .pd-item :global(.pd-item__icon) {
+    color: var(--accent);
+    margin-top: 2px;
+  }
+  .pd-item__label {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .pd-item__value {
+    font-family: var(--serif);
+    font-size: 1.3125rem;
+    line-height: 1.3;
+  }
+  .pd-item__detail {
+    margin-top: var(--s-2);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+
+  .rundown {
+    list-style: none;
+    margin-top: var(--s-6);
+    border-left: 2px solid var(--haze);
+    margin-left: 8px;
+  }
+  .rundown__row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--s-4);
+    padding: 0 0 var(--s-6) var(--s-5);
+  }
+  .rundown__row::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ground);
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+  .rundown__time {
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+  .rundown__row h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  .rundown__row p {
+    color: var(--ink-2);
+    font-size: var(--t-small);
+  }
+
+  .pd-gal__head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--s-5);
+  }
+  .pd-gal__nav {
+    display: flex;
+    gap: var(--s-2);
+  }
+  .round-btn {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--haze);
+    color: var(--brand);
+    transition: background-color var(--t-hover) ease, opacity var(--t-hover) ease;
+  }
+  .round-btn:hover {
+    background: var(--lilac);
+  }
+  .round-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .pd-row {
+    margin-top: var(--s-5);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    cursor: grab;
+    border-radius: var(--r-l);
+  }
+  .pd-row::-webkit-scrollbar {
+    display: none;
+  }
+  .pd-row:global(.is-dragging) {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+  .pd-row ul {
+    display: flex;
+    gap: var(--s-4);
+    list-style: none;
+    width: max-content;
+  }
+  .pd-row__item {
+    width: 300px;
+    aspect-ratio: 4 / 5;
+    scroll-snap-align: start;
+    user-select: none;
+  }
+  .pd-row__item :global(img) {
+    pointer-events: none;
+  }
+
+  /* ---------- Estimator ---------- */
+  .est {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    padding: var(--s-6);
+    border-radius: var(--r-l);
+    background: var(--paper);
+    box-shadow: var(--shadow-float);
+  }
+  .est__title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.625rem;
+  }
+  .est__form {
+    display: grid;
+    gap: var(--s-5);
+    margin-top: var(--s-5);
+  }
+  .est__field {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .est__field > label,
+  .est__field legend {
+    display: block;
+    margin-bottom: var(--s-2);
+    font-size: var(--t-small);
+    font-weight: 600;
+  }
+  .seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 6px;
+    border-radius: var(--r-m);
+    background: var(--mist);
+  }
+  .seg__opt input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .seg__opt span {
+    display: grid;
+    gap: 2px;
+    min-height: 52px;
+    place-content: center;
+    text-align: center;
+    border-radius: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--t-hover) ease, color var(--t-hover) ease;
+  }
+  .seg__opt small {
+    font-weight: 500;
+    font-size: var(--t-micro);
+    color: var(--ink-2);
+  }
+  .seg__opt input:checked + span {
+    background: var(--brand);
+    color: #fff;
+  }
+  .seg__opt input:checked + span small {
+    color: var(--haze);
+  }
+  .seg__opt input:focus-visible + span {
+    outline: 2.5px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .est__guests {
+    display: grid;
+    grid-template-columns: 1fr 96px;
+    gap: var(--s-3);
+    align-items: center;
+  }
+  .est__guests input[type="range"] {
+    width: 100%;
+    accent-color: var(--brand);
+    min-height: 32px;
+  }
+  .est__guests input[type="number"] {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 var(--s-3);
+    border: 1.5px solid var(--lilac);
+    border-radius: var(--r-s);
+    background: var(--ground);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .est__guests input[type="number"]:focus-visible {
+    border-color: var(--accent-ink);
+  }
+  .est__hint {
+    margin-top: var(--s-2);
+    font-size: var(--t-micro);
+    color: var(--ink-2);
+  }
+  .est__addons {
+    list-style: none;
+    display: grid;
+    gap: 2px;
+  }
+  .est__addons label {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--s-3);
+    align-items: center;
+    min-height: 44px;
+    padding: 6px 0;
+    font-size: var(--t-small);
+    cursor: pointer;
+  }
+  .est__addons input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--brand);
+  }
+  .est__addon-price {
+    color: var(--ink-2);
+  }
+  .est__result {
+    margin-top: var(--s-5);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+  }
+  .est__label {
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .est__total {
+    font-family: var(--serif);
+    font-size: clamp(1.875rem, 1.5rem + 1vw, 2.375rem);
+    line-height: 1.15;
+  }
+  .est__breakdown {
+    list-style: none;
+    margin-top: var(--s-3);
+    display: grid;
+    gap: 4px;
+    font-size: var(--t-micro);
+    color: var(--ink-2);
+  }
+  .est__breakdown :global(li) {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
+  .est__cta {
+    width: 100%;
+    margin-top: var(--s-5);
+  }
+  .est__note {
+    margin-top: var(--s-3);
+    font-size: var(--t-micro);
+    color: var(--ink-2);
+  }
+
+  .card-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+    margin-top: var(--s-7);
+  }
+  .card-grid > li {
+    display: grid;
+  }
+  .pd-hero__note {
+    margin-top: var(--s-4);
+    max-width: 34rem;
+  }
+  .pd-kelas__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .pd-kelas__copy {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+  }
+  .pd-kelas__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+  .pd-venues__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-4);
+  }
+  @media (max-width: 1100px) {
+    .card-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .pd-kelas__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .card-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .pd-kelas__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .sticky-est {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-3) var(--gutter) calc(var(--s-3) + env(safe-area-inset-bottom));
+    background: var(--paper);
+    box-shadow: 0 -1px 0 var(--line), 0 -12px 24px -16px rgba(34, 33, 54, 0.3);
+  }
+  .sticky-est span {
+    display: block;
+    font-size: var(--t-micro);
+    color: var(--ink-2);
+  }
+  .sticky-est strong {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.25rem;
+  }
+
+  @media (max-width: 1000px) {
+    .pd-hero,
+    .pd-body {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-7);
+    }
+    .est {
+      position: static;
+    }
+  }
+  @media (max-width: 640px) {
+    .pd-items ul,
+    .others__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .pd-gallery {
+      height: 440px;
+    }
+  }
+  @media (min-width: 1001px) {
+    .sticky-est {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  import "../../scripts/estimator.ts";
+  import "../../scripts/drag-row.ts";
+</script>

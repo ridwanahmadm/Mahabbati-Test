@@ -1,0 +1,183 @@
+---
+// Index with preview: one row per need; on a precise pointer the row's photo follows the cursor (preview.ts).
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import { photo } from "../data/images";
+import { NEEDS, PACKAGES } from "../data/packages";
+import { VENUES } from "../data/venues";
+import { rupiahShort, url } from "../data/site";
+
+const rows = NEEDS.map((n) => {
+  const pool = n.id === "tempat" ? VENUES : PACKAGES.filter((p) => p.need === n.id);
+  const min = Math.min(...pool.map((p) => p.priceFrom));
+  const sample = pool.every((p) => p.placeholder);
+  const href = n.id === "tempat" ? url("/tempat/") : url(`/layanan/?kebutuhan=${n.id}`);
+  return { ...n, min, sample, href, count: pool.length };
+});
+---
+
+<ul class="nidx" data-preview-list>
+  {
+    rows.map((r, i) => (
+      <li class="nidx__row" data-preview-index={i}>
+        <figure class="nidx__thumb photo" aria-hidden="true">
+          <Image src={photo(r.photo)} alt="" widths={[200, 320]} sizes="96px" />
+        </figure>
+        <h3 class="nidx__name">
+          <a href={r.href} class="nidx__link">
+            {r.label}
+          </a>
+        </h3>
+        <p class="nidx__short">{r.short}</p>
+        <p class="nidx__price">
+          <span>
+            mulai{r.sample && <span class="nidx__sample">, harga contoh</span>}
+          </span>
+          <strong class="num">{rupiahShort(r.min)}</strong>
+        </p>
+        <span class="nidx__go" aria-hidden="true">
+          <Icon name="arrow_outward" size={26} />
+        </span>
+      </li>
+    ))
+  }
+</ul>
+
+<div class="nidx__preview" aria-hidden="true" data-preview>
+  {rows.map((r) => <Image src={photo(r.photo)} alt="" widths={[480, 720]} sizes="320px" class="nidx__preview-img" loading="lazy" />)}
+</div>
+
+<style>
+  .nidx {
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .nidx__row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 2fr) 48px;
+    gap: var(--s-6);
+    align-items: center;
+    padding: var(--s-5) var(--s-3);
+    border-bottom: 1px solid var(--line);
+    transition: background-color var(--t-ui) ease;
+  }
+  .nidx__row:hover {
+    background: var(--mist);
+  }
+  .nidx__row:focus-within {
+    outline: 2.5px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  .nidx__thumb {
+    display: none;
+  }
+  .nidx__name {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.625rem, 1.2rem + 1.5vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  .nidx__link {
+    text-decoration: none;
+  }
+  .nidx__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .nidx__link:focus-visible {
+    outline: none;
+  }
+  .nidx__short {
+    color: var(--ink-2);
+  }
+  .nidx__price {
+    display: grid;
+    text-align: right;
+  }
+  .nidx__price > span {
+    font-size: var(--t-micro);
+    color: var(--ink-2);
+  }
+  .nidx__price strong {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.5rem;
+  }
+  .nidx__go {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--haze);
+    color: var(--brand);
+    transition: background-color var(--t-ui) ease, color var(--t-ui) ease;
+  }
+  .nidx__row:hover .nidx__go {
+    background: var(--brand);
+    color: #fff;
+  }
+  .nidx__preview {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 40;
+    width: 300px;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r-l);
+    overflow: clip;
+    pointer-events: none;
+    opacity: 0;
+    scale: 0.85;
+    transition: opacity 220ms ease, scale 320ms var(--ease-out);
+    box-shadow: var(--shadow-float);
+  }
+  .nidx__preview:global(.is-on) {
+    opacity: 1;
+    scale: 1;
+  }
+  .nidx__preview :global(.nidx__preview-img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 520ms var(--ease-in-out);
+  }
+  .nidx__preview :global(.nidx__preview-img.is-active) {
+    clip-path: inset(0 0 0 0);
+    z-index: 1;
+  }
+  @media (max-width: 900px) {
+    .nidx__row {
+      grid-template-columns: 88px minmax(0, 1fr);
+      gap: var(--s-1) var(--s-4);
+      align-items: start;
+    }
+    .nidx__thumb {
+      display: block;
+      grid-row: span 3;
+      aspect-ratio: 1;
+      border-radius: var(--r-m);
+    }
+    .nidx__price {
+      text-align: left;
+      display: flex;
+      align-items: baseline;
+      gap: var(--s-2);
+    }
+    .nidx__go,
+    .nidx__preview {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import "../scripts/preview.ts";
+</script>

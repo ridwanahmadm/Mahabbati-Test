@@ -1,0 +1,116 @@
+---
+// "What are you preparing?" — a real GET form, so it works without JavaScript and links can be shared.
+import Icon from "./Icon.astro";
+import { NEEDS, GUEST_RANGES } from "../data/packages";
+import { url } from "../data/site";
+
+interface Props {
+  id?: string;
+  class?: string;
+  variant?: "hero" | "bar";
+}
+const { id = "finder", class: cls, variant = "hero" } = Astro.props;
+---
+
+<form class:list={["finder", `finder--${variant}`, cls]} action={url("/layanan/")} method="get" role="search" aria-label="Cari layanan pernikahan" data-finder data-venues={url("/tempat/")}>
+  <div class="finder__field">
+    <label for={`${id}-need`}>Yang sedang kamu siapkan</label>
+    <select id={`${id}-need`} name="kebutuhan" data-finder-need>
+      <option value="">Semua kebutuhan</option>
+      {NEEDS.map((n) => <option value={n.id}>{n.label}</option>)}
+    </select>
+  </div>
+  <div class="finder__field">
+    <label for={`${id}-guests`}>Perkiraan tamu</label>
+    <select id={`${id}-guests`} name="tamu" data-finder-guests>
+      <option value="">Belum tahu</option>
+      {GUEST_RANGES.map((g) => <option value={g.id}>{g.label}</option>)}
+    </select>
+  </div>
+  <button class="btn finder__go" type="submit">
+    <Icon name="search" size={20} />Lihat pilihan
+  </button>
+</form>
+
+<script>
+  // "Tempat saja" lives on its own page.
+  document.querySelectorAll<HTMLFormElement>("[data-finder]").forEach((form) =>
+    form.addEventListener("submit", (e) => {
+      const need = form.querySelector<HTMLSelectElement>("[data-finder-need]")?.value;
+      if (need !== "tempat") return;
+      e.preventDefault();
+      const tamu = form.querySelector<HTMLSelectElement>("[data-finder-guests]")?.value;
+      location.href = form.dataset.venues + (tamu ? `?tamu=${encodeURIComponent(tamu)}` : "");
+    }),
+  );
+</script>
+
+<style>
+  .finder {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+    gap: var(--s-2);
+    align-items: end;
+    padding: var(--s-3);
+    border-radius: var(--r-l);
+    background: var(--paper);
+    box-shadow: var(--shadow-float);
+  }
+  .finder--bar {
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .finder__field {
+    display: grid;
+    gap: 2px;
+    padding: var(--s-2) var(--s-4);
+    border-radius: var(--r-m);
+    transition: background-color var(--t-hover) ease;
+  }
+  .finder__field:hover,
+  .finder__field:focus-within {
+    background: var(--mist);
+  }
+  .finder label {
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .finder select {
+    appearance: none;
+    width: 100%;
+    min-height: 36px;
+    padding: 0 28px 0 0;
+    border: 0;
+    background: transparent
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' width='20' height='20' fill='%2345445E'%3E%3Cpath d='M480-360 280-560h400z'/%3E%3C/svg%3E")
+      no-repeat right center;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .finder select:focus-visible {
+    outline: none;
+  }
+  .finder__field:focus-within {
+    box-shadow: inset 0 0 0 2px var(--accent-ink);
+  }
+  .finder__go {
+    min-height: 60px;
+    padding-inline: var(--s-6);
+  }
+  @media (max-width: 1180px) {
+    .finder {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .finder__go {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+  }
+  @media (max-width: 560px) {
+    .finder {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

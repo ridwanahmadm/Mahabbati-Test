@@ -1,0 +1,187 @@
+---
+import { url } from "../data/site";
+import Logo from "./Logo.astro";
+import Icon from "./Icon.astro";
+import {
+  WA,
+  waLink,
+  EMAIL,
+  INSTAGRAM_URL,
+  ADDRESS,
+  TERMS_URL,
+  PRIVACY_URL,
+  DATA_DELETION_URL,
+  WO_GREETING,
+} from "../data/site";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer chapter-night on-dark">
+  <div class="wrap">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <Logo part="lockup" class="site-footer__logo" />
+        <p>Wedding organizer syar'i dan aplikasi ta'aruf. Menemani sebelum, saat, dan setelah akad.</p>
+      </div>
+
+      <nav aria-label="Tautan footer" class="site-footer__nav">
+        <div>
+          <h2>Layanan</h2>
+          <ul>
+            <li><a href={url("/layanan/?kebutuhan=lengkap")}>Paket lengkap</a></li>
+            <li><a href={url("/layanan/?kebutuhan=akad")}>Akad nikah</a></li>
+            <li><a href={url("/layanan/?kebutuhan=masjid")}>Akad di masjid</a></li>
+            <li><a href={url("/layanan/?kebutuhan=walimah")}>Walimah</a></li>
+            <li><a href={url("/layanan/?kebutuhan=khitbah")}>Khitbah</a></li>
+            <li><a href={url("/tempat/")}>Tempat mitra</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Mahabbati</h2>
+          <ul>
+            <li><a href={url("/asatidz/")}>Asatidz & kelas pranikah</a></li>
+            <li><a href={url("/cerita/")}>Cerita pasangan</a></li>
+            <li><a href={url("/aplikasi/")}>Aplikasi ta'aruf</a></li>
+            <li><a href={url("/aplikasi/#membership")}>Membership</a></li>
+            <li><a href={url("/tentang/")}>Tentang & standar syar'i</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Hubungi kami</h2>
+          <ul class="site-footer__contact">
+            <li>
+              <a href={waLink(WA.wo.number, WO_GREETING)} rel="noopener">
+                <Icon name="whatsapp" size={18} /><span>Wedding Organizer <span class="num">{WA.wo.label}</span></span>
+              </a>
+            </li>
+            <li>
+              <a href={waLink(WA.ikhwan.number)} rel="noopener">
+                <Icon name="whatsapp" size={18} /><span>Ta'aruf ikhwan <span class="num">{WA.ikhwan.label}</span></span>
+              </a>
+            </li>
+            <li>
+              <a href={waLink(WA.akhwat.number)} rel="noopener">
+                <Icon name="whatsapp" size={18} /><span>Ta'aruf akhwat <span class="num">{WA.akhwat.label}</span></span>
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${EMAIL}`}><Icon name="mail" size={18} />{EMAIL}</a>
+            </li>
+            <li>
+              <a href={INSTAGRAM_URL} rel="noopener"><Icon name="instagram" size={18} />@mahabbati_official</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__address"><Icon name="location_on" size={18} />{ADDRESS}</p>
+      <ul>
+        <li><a href={TERMS_URL}>Ketentuan layanan</a></li>
+        <li><a href={PRIVACY_URL}>Kebijakan privasi</a></li>
+        <li><a href={DATA_DELETION_URL} rel="noopener">Penghapusan data</a></li>
+      </ul>
+      <p class="site-footer__legal">© {year} Mahabbati. Foto ilustrasi dari Unsplash.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--s-9) var(--s-6);
+  }
+  .site-footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--s-8);
+  }
+  .site-footer__brand :global(.logo-lockup) {
+    color: #fff;
+  }
+  .site-footer__brand p {
+    margin-top: var(--s-4);
+    max-width: 26ch;
+    color: var(--lilac);
+  }
+  .site-footer__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.6fr;
+    gap: var(--s-6);
+  }
+  .site-footer h2 {
+    font-family: var(--sans);
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: var(--s-3);
+  }
+  .site-footer ul {
+    list-style: none;
+  }
+  .site-footer li a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 40px;
+    color: var(--haze);
+    text-decoration: none;
+    font-size: var(--t-small);
+    transition: color var(--t-hover) ease;
+  }
+  .site-footer__contact a > span .num {
+    display: block;
+    color: var(--lilac);
+  }
+  .site-footer__contact li a {
+    padding-block: 4px;
+  }
+  .site-footer li a:hover {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-6);
+    margin-top: var(--s-8);
+    padding-top: var(--s-5);
+    border-top: 1px solid rgba(201, 207, 242, 0.22);
+    font-size: var(--t-micro);
+    color: var(--lilac);
+  }
+  .site-footer__bottom ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+  }
+  .site-footer__bottom li a {
+    font-size: var(--t-micro);
+    min-height: 32px;
+  }
+  .site-footer__address {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  .site-footer__legal {
+    margin-left: auto;
+  }
+  @media (max-width: 900px) {
+    .site-footer__top {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-7);
+    }
+    .site-footer__nav {
+      grid-template-columns: 1fr 1fr;
+    }
+    .site-footer__nav > div:last-child {
+      grid-column: 1 / -1;
+    }
+    .site-footer__legal {
+      margin-left: 0;
+    }
+  }
+</style>

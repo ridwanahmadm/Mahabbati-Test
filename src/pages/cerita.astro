@@ -1,0 +1,123 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import StoryCard from "../components/StoryCard.astro";
+import { visibleStories, SHOW_PLACEHOLDERS } from "../data/people";
+import { PROOF, WA, waLink, EMAIL, INSTAGRAM_URL } from "../data/site";
+
+const wo = visibleStories((s) => s.type === "wo");
+const others = visibleStories((s) => s.type !== "wo");
+const share = waLink(WA.wo.number, "Assalamu'alaikum, Tim Mahabbati. Kami ingin berbagi cerita pernikahan kami bersama Mahabbati.");
+---
+
+<Base
+  title="Cerita pasangan | Mahabbati"
+  description="Cerita pasangan yang bertemu lewat aplikasi Mahabbati dan menikah bersama Wedding Organizer Mahabbati."
+  current="cerita"
+  ogImage="walk"
+>
+  <section class="ch wrap" aria-labelledby="ch-title">
+    <h1 id="ch-title" class="t-display">Cerita pasangan.</h1>
+    <p class="ch__proof"><strong class="num">{PROOF.couples}</strong> pasangan sudah menikah bersama Wedding Organizer Mahabbati.</p>
+    {
+      SHOW_PLACEHOLDERS && (
+        <p class="sample-note">
+          <Icon name="info" size={20} />
+          Mode draf: kartu bergaris adalah slot placeholder. Isi datanya di src/data/people.ts; slot kosong tidak tampil di situs live.
+        </p>
+      )
+    }
+  </section>
+
+  <section class="cs section" aria-labelledby="cs-wo-title">
+    <div class="wrap">
+      <h2 id="cs-wo-title" class="t-h2">Bersama Wedding Organizer.</h2>
+      <ul class="cs__grid">
+        {
+          wo.map((s) => (
+            <li>
+              <StoryCard story={s} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="cs section chapter-mist" aria-labelledby="cs-app-title">
+    <div class="wrap">
+      <h2 id="cs-app-title" class="t-h2">Dari aplikasi dan kelas pranikah.</h2>
+      <ul class="cs__grid">
+        {
+          others.map((s) => (
+            <li>
+              <StoryCard story={s} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="cshare section" aria-labelledby="cshare-title">
+    <div class="wrap cshare__inner">
+      <h2 id="cshare-title" class="t-h2">Menikah bersama Mahabbati? Ceritakan kisahmu.</h2>
+      <p class="t-lead">Kami hanya menampilkan cerita dengan izin kalian, dan bisa memakai inisial saja.</p>
+      <div class="cshare__actions">
+        <a class="btn btn--wa" href={share} rel="noopener" data-track="wa:share-story"><Icon name="whatsapp" size={20} />Kirim lewat WhatsApp</a>
+        <a class="btn btn--outline" href={`mailto:${EMAIL}?subject=${encodeURIComponent("Cerita pernikahan kami")}`}><Icon name="mail" size={20} />Kirim lewat email</a>
+        <a class="link" href={INSTAGRAM_URL} rel="noopener">Lihat cerita lain di Instagram</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ch {
+    display: grid;
+    gap: var(--s-4);
+    padding-block: clamp(24px, 4vw, 56px) 0;
+  }
+  .ch__proof {
+    font-size: var(--t-lead);
+    color: var(--ink-2);
+  }
+  .ch__proof strong {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 2rem;
+    color: var(--ink);
+  }
+  .cs__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+    margin-top: var(--s-7);
+  }
+  .cs__grid > li {
+    display: grid;
+  }
+  .cshare__inner {
+    display: grid;
+    gap: var(--s-4);
+    justify-items: start;
+  }
+  .cshare__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-5);
+    margin-top: var(--s-2);
+  }
+  @media (max-width: 1000px) {
+    .cs__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 640px) {
+    .cs__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

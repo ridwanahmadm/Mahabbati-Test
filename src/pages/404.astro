@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+import Logo from "../components/Logo.astro";
+import { url } from "../data/site";
+---
+
+<Base title="Halaman tidak ditemukan | Mahabbati" description="Halaman yang kamu cari tidak ada.">
+  <section class="nf wrap section" aria-labelledby="nf-title">
+    <Logo part="mark" class="nf__mark" />
+    <h1 id="nf-title" class="t-h2">Halaman ini tidak ditemukan.</h1>
+    <p class="t-lead">Mungkin tautannya sudah berubah. Lanjutkan dari salah satu halaman berikut.</p>
+    <div class="nf__links">
+      <a class="btn" href={url("/")}>Ke beranda</a>
+      <a class="btn btn--outline" href={url("/taaruf/")}>Ta'aruf</a>
+      <a class="btn btn--outline" href={url("/wedding-organizer/")}>Wedding Organizer</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    display: grid;
+    justify-items: start;
+    gap: var(--s-5);
+    min-height: 60svh;
+    align-content: center;
+  }
+  .nf :global(.nf__mark) {
+    width: 160px;
+    color: var(--brand);
+  }
+  .nf__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+</style>

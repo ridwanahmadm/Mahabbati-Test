@@ -1,0 +1,250 @@
+---
+// "Benang": the m♡ line, drawn by the scroll, runs through the stages and ends by writing the mark (journey.ts).
+import { Image } from "astro:assets";
+import Logo from "./Logo.astro";
+import { photo } from "../data/images";
+
+type Stage = { id: string; name: string; line: string; how: string; photo: string; alt: string; phase?: string };
+interface Props {
+  title: string;
+  lead: string;
+  stages: Stage[];
+  close: string;
+  doors: { href: string; label: string; outline?: boolean }[];
+  tall?: string[];
+}
+const { title, lead, stages, close, doors, tall = [] } = Astro.props;
+---
+
+<section class="journey section" aria-labelledby="journey-title" data-journey>
+  <div class="wrap">
+    <header class="journey__head">
+      <h2 id="journey-title" class="t-h2">{title}</h2>
+      <p class="t-lead">{lead}</p>
+    </header>
+
+    <div class="journey__body" data-journey-body>
+      <svg class="journey__thread" aria-hidden="true" focusable="false" data-thread>
+        <path class="journey__path journey__path--base" />
+        <path class="journey__path journey__path--ink" />
+        <circle class="journey__nib" r="6" />
+      </svg>
+
+      <ol class="journey__list">
+        {
+          stages.map((s, i) => (
+            <li class:list={["stage", i % 2 ? "stage--flip" : "", tall.includes(s.id) ? "stage--tall" : ""]} data-stage>
+              <div class="stage__text">
+                <span class="stage__node" data-node aria-hidden="true">
+                  {i + 1}
+                </span>
+                {s.phase && (i === 0 || stages[i - 1].phase !== s.phase) && <p class="stage__phase">{s.phase}</p>}
+                <h3 class="t-h3">
+                  <span class="visually-hidden">Tahap {i + 1}: </span>
+                  {s.name}
+                </h3>
+                <p class="stage__line">{s.line}</p>
+                <p class="stage__how">{s.how}</p>
+              </div>
+              <figure class="stage__photo photo" data-reveal="mask">
+                <Image src={photo(s.photo)} alt={s.alt} widths={[480, 720, 960, 1280]} sizes="(max-width: 900px) 92vw, 46vw" />
+              </figure>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="journey__end" data-journey-end>
+        <div class="journey__mark" data-mark>
+          <Logo part="mark" />
+        </div>
+        <p class="journey__close">{close}</p>
+        <div class="journey__doors">
+          {doors.map((d) => <a class:list={["btn", d.outline && "btn--outline"]} href={d.href}>{d.label}</a>)}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ---------- Benang ---------- */
+  .journey__head {
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--s-6) var(--s-8);
+    align-items: end;
+    margin-bottom: var(--s-9);
+  }
+  .journey__body {
+    position: relative;
+  }
+  .journey__thread {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .journey__path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .journey__path--base {
+    stroke: var(--haze);
+    stroke-width: 2;
+  }
+  .journey__path--ink {
+    stroke: var(--brand);
+    stroke-width: 3.5;
+  }
+  .journey__nib {
+    fill: var(--brand);
+    opacity: 0;
+  }
+  .journey__list {
+    position: relative;
+    list-style: none;
+    display: grid;
+    gap: clamp(72px, 9vw, 140px);
+  }
+  .stage {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--s-5);
+    align-items: center;
+  }
+  .stage__text {
+    position: relative;
+    grid-column: 2 / span 4;
+    grid-row: 1;
+  }
+  .stage__photo {
+    grid-column: 7 / span 6;
+    grid-row: 1;
+    aspect-ratio: 3 / 2;
+  }
+  .stage--tall .stage__photo {
+    grid-column: 7 / span 5;
+    aspect-ratio: 4 / 5;
+  }
+  .stage--flip .stage__text {
+    grid-column: 8 / span 4;
+  }
+  .stage--flip .stage__photo {
+    grid-column: 1 / span 6;
+  }
+  .stage--flip.stage--tall .stage__photo {
+    grid-column: 2 / span 5;
+  }
+  .stage__node {
+    position: absolute;
+    top: 2px;
+    left: -64px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ground);
+    box-shadow: inset 0 0 0 2px var(--lilac);
+    color: var(--accent-ink);
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-variant-numeric: lining-nums;
+    transition: background-color 300ms ease, color 300ms ease, box-shadow 300ms ease;
+  }
+  .stage__node:global(.is-on) {
+    background: var(--brand);
+    box-shadow: inset 0 0 0 2px var(--brand);
+    color: #fff;
+  }
+  .stage__line {
+    margin-top: var(--s-3);
+    font-size: var(--t-lead);
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .stage__how {
+    margin-top: var(--s-4);
+    color: var(--ink-2);
+    max-width: 36ch;
+  }
+  .journey__end {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    padding-top: clamp(96px, 10vw, 160px);
+  }
+  .journey__mark {
+    width: clamp(180px, 22vw, 280px);
+    color: var(--brand);
+    --wipe: 115%;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--wipe) - 15%), transparent var(--wipe));
+    mask-image: linear-gradient(90deg, #000 calc(var(--wipe) - 15%), transparent var(--wipe));
+  }
+  .journey__close {
+    margin-top: var(--s-6);
+    font-family: var(--serif);
+    font-size: var(--t-h3);
+  }
+  .journey__doors {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-3);
+    margin-top: var(--s-6);
+  }
+
+  @media (max-width: 900px) {
+    .journey__head {
+      grid-template-columns: minmax(0, 1fr);
+      margin-bottom: var(--s-8);
+    }
+    .stage {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: var(--s-5);
+    }
+    .stage__text,
+    .stage--flip .stage__text {
+      grid-column: 1;
+      grid-row: 1;
+      padding: 0 0 0 64px;
+    }
+    .stage__photo,
+    .stage--tall .stage__photo,
+    .stage--flip .stage__photo,
+    .stage--flip.stage--tall .stage__photo {
+      grid-column: 1;
+      grid-row: 2;
+      margin-left: 64px;
+      aspect-ratio: 4 / 3;
+    }
+    .stage__node {
+      top: 0;
+      left: 0;
+    }
+    .journey__end {
+      justify-items: start;
+      text-align: left;
+      padding-left: 64px;
+    }
+    .journey__doors {
+      justify-content: flex-start;
+    }
+  }
+
+  .stage__phase {
+    margin-bottom: var(--s-2);
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+</style>
+
+<script>
+  import "../scripts/journey.ts";
+</script>

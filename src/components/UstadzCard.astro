@@ -1,0 +1,82 @@
+---
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import { ustadzPhoto } from "../data/images";
+import type { Ustadz } from "../data/people";
+
+interface Props {
+  ustadz: Ustadz;
+  compact?: boolean;
+}
+const { ustadz, compact = false } = Astro.props;
+---
+
+<article class:list={["ucard", compact && "ucard--compact"]}>
+  <figure class="ucard__photo">
+    <Image
+      src={ustadzPhoto(ustadz.photo)}
+      alt={`Potret ${ustadz.name}`}
+      widths={[240, 400]}
+      sizes={compact ? "160px" : "(max-width: 720px) 44vw, 260px"}
+    />
+  </figure>
+  <h3 class="ucard__name">{ustadz.name}, {ustadz.title}</h3>
+  {
+    !compact && (
+      <>
+        <p class="ucard__known">{ustadz.known}</p>
+        <a class="ucard__sample link" href={ustadz.sample.url} rel="noopener">
+          <Icon name="play_arrow" size={18} />
+          Kajian: {ustadz.sample.label}
+        </a>
+      </>
+    )
+  }
+</article>
+
+<style>
+  .ucard {
+    display: grid;
+    align-content: start;
+    gap: var(--s-2);
+  }
+  .ucard__photo {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--r-l);
+    overflow: clip;
+    background: var(--haze);
+    margin-bottom: var(--s-2);
+  }
+  .ucard__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 20%;
+  }
+  .ucard__name {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.1875rem;
+    line-height: 1.3;
+  }
+  .ucard--compact .ucard__name {
+    font-size: 1rem;
+  }
+  .ucard__known {
+    color: var(--ink-2);
+    font-size: var(--t-small);
+  }
+  .ucard__sample {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 32px;
+    font-size: var(--t-small);
+  }
+  :global(.chapter-night) .ucard__known {
+    color: var(--lilac);
+  }
+  :global(.chapter-night) .ucard__name {
+    color: #fff;
+  }
+</style>

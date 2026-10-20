@@ -1,0 +1,295 @@
+---
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import VenueCard from "../../components/VenueCard.astro";
+import { VENUES, VENUE_TYPES, VENUE_CITIES } from "../../data/venues";
+import { GUEST_RANGES } from "../../data/packages";
+import { WA, waLink, url } from "../../data/site";
+
+const wa = waLink(WA.wo.number, "Assalamu'alaikum, Tim WO Mahabbati. Saya sedang mencari tempat untuk akad/walimah. Boleh dibantu pilihannya?");
+const anySample = VENUES.some((v) => v.placeholder);
+---
+
+<Base
+  title="Tempat mitra untuk akad dan walimah | Mahabbati"
+  description="Masjid, gedung, taman, villa, dan restoran privat untuk akad dan walimah. Pesan tempatnya saja atau sekalian dengan paket WO Mahabbati."
+  current="tempat"
+  ogImage="v-ballroom"
+>
+  <section class="vh wrap" aria-labelledby="vh-title">
+    <h1 id="vh-title" class="t-display">Tempat mitra.</h1>
+    <p class="t-lead">Masjid, gedung, taman, sampai villa keluarga. Pesan tempatnya saja, atau sekalian dengan paket Wedding Organizer.</p>
+    {
+      anySample && (
+        <p class="sample-note vh__note">
+          <Icon name="info" size={20} />
+          Daftar ini masih contoh. Daftar tempat mitra resmi sedang kami lengkapi.
+        </p>
+      )
+    }
+  </section>
+
+  <section class="vlist section" aria-labelledby="vlist-title">
+    <div class="wrap">
+      <h2 id="vlist-title" class="visually-hidden">Daftar tempat</h2>
+      <form class="vfilters" data-venue-form action={url("/tempat/")} method="get">
+        <fieldset class="vfilters__types">
+          <legend class="visually-hidden">Jenis tempat</legend>
+          <label class="fchip">
+            <input type="radio" name="jenis" value="" checked />
+            <span>Semua</span>
+          </label>
+          {
+            VENUE_TYPES.map((t) => (
+              <label class="fchip">
+                <input type="radio" name="jenis" value={t.id} />
+                <span>
+                  <Icon name={t.icon} size={18} />
+                  {t.label}
+                </span>
+              </label>
+            ))
+          }
+        </fieldset>
+        <div class="vfilters__selects">
+          <label>
+            <span>Kota</span>
+            <select name="kota">
+              <option value="">Semua kota</option>
+              {VENUE_CITIES.map((c) => <option value={c}>{c}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>Tamu</span>
+            <select name="tamu">
+              <option value="">Semua</option>
+              {GUEST_RANGES.map((g) => <option value={g.id}>{g.label}</option>)}
+            </select>
+          </label>
+          <noscript><button class="btn" type="submit">Terapkan</button></noscript>
+        </div>
+      </form>
+
+      <p class="vlist__count" role="status" data-venue-count>{VENUES.length} tempat</p>
+      <ul class="vlist__grid">
+        {
+          VENUES.map((v) => (
+            <li data-venue-item>
+              <VenueCard venue={v} />
+            </li>
+          ))
+        }
+      </ul>
+      <div class="vlist__empty" data-venue-empty hidden>
+        <p class="t-h3">Belum ada tempat yang cocok dengan pilihan ini.</p>
+        <p>Ceritakan kota dan jumlah tamumu, tim kami bantu carikan.</p>
+        <a class="btn btn--wa" href={wa} rel="noopener" data-track="wa:venues-empty"><Icon name="whatsapp" size={20} />Tanya tim WO</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="vcta section chapter-mist" aria-labelledby="vcta-title">
+    <div class="wrap vcta__inner">
+      <h2 id="vcta-title" class="t-h2">Punya tempat incaran sendiri?</h2>
+      <p class="t-lead">Kami tetap bisa membantu. Pilih paket WO tanpa tempat, atau tanyakan apakah tempat incaranmu bisa kami tangani.</p>
+      <div class="vcta__actions">
+        <a class="btn" href={url("/layanan/")}>Lihat layanan</a>
+        <a class="btn btn--wa" href={wa} rel="noopener" data-track="wa:venues-bottom"><Icon name="whatsapp" size={20} />Tanya tim WO</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .vh {
+    display: grid;
+    gap: var(--s-4);
+    padding-block: clamp(24px, 4vw, 56px) 0;
+  }
+  .vh__note {
+    max-width: 40rem;
+  }
+  .vfilters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--s-4) var(--s-6);
+    padding-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line);
+  }
+  .vfilters__types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .fchip {
+    position: relative;
+  }
+  .fchip input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .fchip span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 var(--s-4);
+    border-radius: 999px;
+    background: var(--mist);
+    font-size: var(--t-small);
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color var(--t-hover) ease, color var(--t-hover) ease;
+  }
+  .fchip:hover span {
+    background: var(--haze);
+  }
+  .fchip input:checked + span {
+    background: var(--brand);
+    color: #fff;
+  }
+  .fchip input:focus-visible + span {
+    outline: 2.5px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .vfilters__selects {
+    display: flex;
+    gap: var(--s-4);
+  }
+  .vfilters__selects label {
+    display: grid;
+    gap: 2px;
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .vfilters__selects select {
+    min-height: 44px;
+    padding: 0 var(--s-6) 0 var(--s-3);
+    border: 1.5px solid var(--lilac);
+    border-radius: var(--r-s);
+    background: var(--paper);
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .vlist__count {
+    margin-block: var(--s-5);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .vlist__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-6) var(--s-5);
+  }
+  .vlist__grid > li {
+    display: grid;
+  }
+  .vlist__empty {
+    display: grid;
+    gap: var(--s-3);
+    justify-items: start;
+    padding: var(--s-7);
+    border-radius: var(--r-l);
+    background: var(--mist);
+  }
+  .vcta__inner {
+    display: grid;
+    gap: var(--s-4);
+    justify-items: start;
+  }
+  .vcta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+  @media (max-width: 1100px) {
+    .vlist__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 640px) {
+    .vlist__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .vfilters__types {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin-inline: calc(-1 * var(--gutter));
+      padding-inline: var(--gutter);
+      width: calc(100% + 2 * var(--gutter));
+      max-width: none;
+      scrollbar-width: none;
+    }
+    .vfilters__selects {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      width: 100%;
+    }
+    .vfilters__selects select {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { gsap, reducedMotion } from "../../scripts/motion";
+
+  const GUESTS: Record<string, number> = { s: 1, m: 100, l: 300, xl: 500 };
+  const form = document.querySelector<HTMLFormElement>("[data-venue-form]");
+  const items = [...document.querySelectorAll<HTMLElement>("[data-venue-item]")];
+  const count = document.querySelector<HTMLElement>("[data-venue-count]");
+  const empty = document.querySelector<HTMLElement>("[data-venue-empty]");
+  if (form) {
+    const params = new URLSearchParams(location.search);
+    const jenis = params.get("jenis") ?? "";
+    const r = form.querySelector<HTMLInputElement>(`input[name="jenis"][value="${CSS.escape(jenis)}"]`);
+    if (r) r.checked = true;
+    for (const key of ["kota", "tamu"]) {
+      const sel = form.querySelector<HTMLSelectElement>(`select[name="${key}"]`);
+      const v = params.get(key);
+      if (sel && v && [...sel.options].some((o) => o.value === v)) sel.value = v;
+    }
+    const apply = (animate: boolean) => {
+      const d = new FormData(form);
+      const t = String(d.get("jenis") ?? "");
+      const k = String(d.get("kota") ?? "");
+      const need = GUESTS[String(d.get("tamu") ?? "")] ?? 0;
+      let shown = 0;
+      const appear: HTMLElement[] = [];
+      for (const li of items) {
+        const c = li.querySelector<HTMLElement>("[data-vcard]")!;
+        const ok = (!t || c.dataset.type === t) && (!k || c.dataset.city === k) && Number(c.dataset.cap) >= need;
+        if (ok && li.hidden) appear.push(li);
+        li.hidden = !ok;
+        if (ok) shown++;
+      }
+      if (count) count.textContent = shown ? `${shown} tempat` : "Tidak ada tempat";
+      if (empty) empty.hidden = shown > 0;
+      if (animate && !reducedMotion() && appear.length)
+        gsap.fromTo(appear, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.06, clearProps: "all" });
+      const q = new URLSearchParams();
+      for (const [key, v] of d) if (v) q.set(key, String(v));
+      history.replaceState(null, "", q.size ? `?${q}` : location.pathname);
+    };
+    form.addEventListener("change", () => apply(true));
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      apply(true);
+    });
+    apply(false);
+  }
+</script>

@@ -1,0 +1,32 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props {
+  items: { q: string; a: string }[];
+  id?: string;
+}
+const { items, id } = Astro.props;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: items.map((i) => ({ "@type": "Question", name: i.q, acceptedAnswer: { "@type": "Answer", text: i.a } })),
+};
+---
+
+<div class="faq" id={id}>
+  {
+    items.map((item) => (
+      <details class="qa" name={id ? `${id}-group` : undefined}>
+        <summary>
+          <span>{item.q}</span>
+          <span class="qa__sign" aria-hidden="true">
+            <Icon name="add" size={20} class="icon-plus" />
+            <Icon name="remove" size={20} class="icon-minus" />
+          </span>
+        </summary>
+        <p class="qa__body">{item.a}</p>
+      </details>
+    ))
+  }
+</div>
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

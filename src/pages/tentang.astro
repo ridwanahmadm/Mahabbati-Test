@@ -1,0 +1,192 @@
+---
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import { Image } from "astro:assets";
+import { photo } from "../data/images";
+import { SYARI_STANDARDS } from "../data/content";
+import { WA, waLink, WO_GREETING, EMAIL, ADDRESS, INSTAGRAM_URL, url } from "../data/site";
+
+const parts = [
+  { icon: "volunteer_activism", title: "Wedding Organizer syar'i", body: "Paket khitbah, akad, akad di masjid, walimah, sampai koordinasi hari H, dengan tempat mitra yang dikurasi.", href: "/layanan/", cta: "Lihat layanan" },
+  { icon: "school", title: "Asatidz Mahabbati", body: "Kelas pranikah, nasihat pernikahan, dan konsultasi syariah, sebelum sampai setelah menikah.", href: "/asatidz/", cta: "Kenali asatidz" },
+  { icon: "favorite", title: "Aplikasi ta'aruf", body: "Ta'aruf yang aman: profil terverifikasi, kuota kembali bila tak dibalas, foto muslimah ditinjau admin wanita.", href: "/aplikasi/", cta: "Kenali aplikasinya" },
+];
+---
+
+<Base
+  title="Tentang Mahabbati dan standar syar'i"
+  description="Mahabbati: wedding organizer syar'i, asatidz, dan aplikasi ta'aruf dalam satu tempat. Baca standar syar'i kami."
+  current="tentang"
+  ogImage="j-walimah"
+>
+  <section class="th wrap" aria-labelledby="th-title">
+    <div>
+      <h1 id="th-title" class="t-display">Menuju janji suci, bersama.</h1>
+      <p class="t-lead">
+        Mahabbati didirikan oleh ustadz lulusan universitas Islam ternama. Kami menyatukan tiga hal yang biasanya terpisah:
+        persiapan ilmu, pertemuan yang aman, dan acara pernikahan yang tertata.
+      </p>
+    </div>
+    <figure class="th__photo photo">
+      <Image src={photo("j-walimah")} alt="Pengantin berkebaya putih dan berpeci memegang buku nikah hijau." widths={[480, 720, 960]} sizes="(max-width: 900px) 92vw, 36vw" loading="eager" />
+    </figure>
+  </section>
+
+  <section class="tp section chapter-mist" aria-labelledby="tp-title">
+    <div class="wrap">
+      <h2 id="tp-title" class="t-h2">Satu ekosistem, tiga bagian.</h2>
+      <ul class="tp__list">
+        {
+          parts.map((p) => (
+            <li>
+              <Icon name={p.icon} size={32} />
+              <h3 class="t-h3">{p.title}</h3>
+              <p>{p.body}</p>
+              <a class="link" href={url(p.href)}>{p.cta}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section id="standar" class="ts section" aria-labelledby="ts-title">
+    <div class="wrap ts__grid">
+      <div>
+        <h2 id="ts-title" class="t-h2">Standar syar'i kami.</h2>
+        <p class="t-lead">Yang kami jaga di setiap acara, supaya kamu tahu persis apa yang bisa diharapkan.</p>
+      </div>
+      <ol class="ts__list">
+        {
+          SYARI_STANDARDS.map((s) => (
+            <li>
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="tc section chapter-night on-dark" aria-labelledby="tc-title">
+    <div class="wrap tc__grid">
+      <h2 id="tc-title" class="t-h2">Hubungi kami.</h2>
+      <ul class="tc__list">
+        <li><Icon name="whatsapp" size={22} /><a href={waLink(WA.wo.number, WO_GREETING)} rel="noopener">Wedding Organizer, {WA.wo.label}</a></li>
+        <li><Icon name="whatsapp" size={22} /><a href={waLink(WA.ikhwan.number)} rel="noopener">Ta'aruf ikhwan, {WA.ikhwan.label}</a></li>
+        <li><Icon name="whatsapp" size={22} /><a href={waLink(WA.akhwat.number)} rel="noopener">Ta'aruf akhwat, {WA.akhwat.label}</a></li>
+        <li><Icon name="mail" size={22} /><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+        <li><Icon name="instagram" size={22} /><a href={INSTAGRAM_URL} rel="noopener">@mahabbati_official</a></li>
+        <li><Icon name="location_on" size={22} /><span>{ADDRESS}</span></li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .th {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: var(--s-8);
+    align-items: center;
+    padding-block: clamp(24px, 4vw, 56px) var(--s-9);
+  }
+  .th .t-lead {
+    margin-top: var(--s-5);
+  }
+  .th__photo {
+    aspect-ratio: 4 / 5;
+  }
+  .tp__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-7);
+    margin-top: var(--s-7);
+  }
+  .tp__list li {
+    display: grid;
+    align-content: start;
+    gap: var(--s-3);
+  }
+  .tp__list li > :global(.icon) {
+    color: var(--accent);
+  }
+  .tp__list p {
+    color: var(--ink-2);
+  }
+  .ts__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-8);
+  }
+  .ts__list {
+    list-style: none;
+    counter-reset: ts;
+    display: grid;
+    gap: var(--s-5);
+  }
+  .ts__list li {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    counter-increment: ts;
+    padding-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line);
+  }
+  .ts__list li::before {
+    content: counter(ts);
+    grid-row: span 2;
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    line-height: 1.1;
+    color: var(--accent);
+  }
+  .ts__list h3 {
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+  .ts__list p {
+    color: var(--ink-2);
+  }
+  .tc__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--s-8);
+  }
+  .tc__list {
+    list-style: none;
+    display: grid;
+    gap: var(--s-4);
+  }
+  .tc__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-3);
+    color: var(--haze);
+  }
+  .tc__list li :global(.icon) {
+    color: var(--lilac);
+    flex: none;
+    margin-top: 2px;
+  }
+  .tc__list a {
+    color: #fff;
+    text-underline-offset: 0.2em;
+  }
+  @media (max-width: 900px) {
+    .th,
+    .ts__grid,
+    .tc__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-6);
+    }
+    .th__photo {
+      max-width: 420px;
+    }
+    .tp__list {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-6);
+    }
+  }
+</style>

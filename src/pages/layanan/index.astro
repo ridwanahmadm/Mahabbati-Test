@@ -1,0 +1,400 @@
+---
+import Base from "../../layouts/Base.astro";
+import Icon from "../../components/Icon.astro";
+import Faq from "../../components/Faq.astro";
+import PackageCard from "../../components/PackageCard.astro";
+import UstadzCard from "../../components/UstadzCard.astro";
+import { Image } from "astro:assets";
+import { photo } from "../../data/images";
+import { PACKAGES, NEEDS, WO_STEPS, GUEST_RANGES, BUDGETS } from "../../data/packages";
+import { WO_FAQ } from "../../data/content";
+import { ASATIDZ } from "../../data/people";
+import { WA, waLink, WO_GREETING, url } from "../../data/site";
+
+const wa = waLink(WA.wo.number, WO_GREETING);
+const chips = NEEDS.filter((n) => n.id !== "tempat");
+const service = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Wedding Organizer Mahabbati",
+  serviceType: "Wedding organizer syar'i",
+  provider: { "@type": "Organization", name: "Mahabbati" },
+  offers: PACKAGES.filter((p) => !p.placeholder).map((p) => ({ "@type": "Offer", name: p.name, priceCurrency: "IDR", price: p.priceFrom })),
+};
+---
+
+<Base
+  title="Layanan pernikahan syar'i | Mahabbati"
+  description="Pilih paket khitbah, akad, akad di masjid, walimah, paket lengkap, atau koordinasi hari H. Bandingkan harga mulai dan jumlah tamu."
+  current="layanan"
+  ogImage="wo-hero"
+  jsonLd={[service]}
+>
+  <section class="cat-hero wrap" aria-labelledby="cat-title">
+    <div>
+      <h1 id="cat-title" class="t-display">Layanan pernikahan.</h1>
+      <p class="t-lead">Pesan satu acara, atau serahkan semuanya. Setiap paket bisa dihitung estimasinya sesuai jumlah tamu.</p>
+    </div>
+    <figure class="cat-hero__photo photo">
+      <Image src={photo("wo-hero")} alt="Pengantin berkebaya putih dan bersiger berdiri di pelaminan." widths={[480, 720, 960]} sizes="(max-width: 900px) 92vw, 30vw" loading="eager" />
+    </figure>
+  </section>
+
+  <section class="cat section" aria-labelledby="cat-results-title">
+    <div class="wrap">
+      <h2 id="cat-results-title" class="visually-hidden">Daftar paket</h2>
+      <form class="filters" data-catalog-form action={url("/layanan/")} method="get">
+        <fieldset class="filters__needs">
+          <legend class="visually-hidden">Kebutuhan</legend>
+          <label class="fchip">
+            <input type="radio" name="kebutuhan" value="" checked />
+            <span>Semua</span>
+          </label>
+          {
+            chips.map((n) => (
+              <label class="fchip">
+                <input type="radio" name="kebutuhan" value={n.id} />
+                <span>{n.label}</span>
+              </label>
+            ))
+          }
+          <a class="fchip fchip--link" href={url("/tempat/")}><span>Tempat saja <Icon name="arrow_outward" size={16} /></span></a>
+        </fieldset>
+        <div class="filters__selects">
+          <label>
+            <span>Tamu</span>
+            <select name="tamu">
+              <option value="">Semua</option>
+              {GUEST_RANGES.map((g) => <option value={g.id}>{g.label}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>Budget</span>
+            <select name="budget">
+              <option value="">Semua</option>
+              {BUDGETS.map((b) => <option value={b.id}>{b.label}</option>)}
+            </select>
+          </label>
+          <noscript><button class="btn" type="submit">Terapkan</button></noscript>
+        </div>
+      </form>
+
+      <p class="cat__count" role="status" data-catalog-count>{PACKAGES.length} paket</p>
+
+      <ul class="cat__grid" data-catalog>
+        {
+          PACKAGES.map((p) => (
+            <li data-catalog-item>
+              <PackageCard pkg={p} headingLevel="h3" />
+            </li>
+          ))
+        }
+      </ul>
+      <div class="cat__empty" data-catalog-empty hidden>
+        <p class="t-h3">Belum ada paket yang cocok dengan pilihan ini.</p>
+        <p>Ceritakan kebutuhanmu ke tim WO, kami bantu susunkan paketnya.</p>
+        <div class="cat__empty-actions">
+          <button class="btn btn--outline" type="button" data-catalog-reset>Tampilkan semua paket</button>
+          <a class="btn btn--wa" href={wa} rel="noopener" data-track="wa:catalog-empty"><Icon name="whatsapp" size={20} />Tanya tim WO</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="kelas section chapter-night on-dark" aria-labelledby="kelas-title">
+    <div class="wrap kelas__grid">
+      <div class="kelas__copy">
+        <h2 id="kelas-title" class="t-h2">Kelas pranikah, sudah termasuk.</h2>
+        <p class="t-lead">
+          Paket Akad, Akad di Masjid, dan Paket Lengkap memberi akses kelas pranikah dan nasihat pernikahan bersama asatidz Mahabbati di
+          aplikasi.
+        </p>
+        <a class="btn btn--lilac" href={url("/asatidz/")}>Lihat isi kelasnya</a>
+      </div>
+      <ul class="kelas__list">
+        {
+          ASATIDZ.map((u) => (
+            <li>
+              <UstadzCard ustadz={u} compact />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="flow section" aria-labelledby="flow-title">
+    <div class="wrap flow__grid">
+      <h2 id="flow-title" class="t-h2">Dari obrolan pertama sampai hari H.</h2>
+      <ol class="flow__list">
+        {
+          WO_STEPS.map((s, i) => (
+            <li class="flow__step" data-reveal style={`--d:${i * 80}`}>
+              <span class="flow__num num" aria-hidden="true">
+                {i + 1}
+              </span>
+              <h3 class="t-h3">{s.title}</h3>
+              <p>{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="wo-faq section chapter-mist" aria-labelledby="wofaq-title">
+    <div class="wrap wo-faq__grid">
+      <div class="wo-faq__aside">
+        <h2 id="wofaq-title" class="t-h2">Tanya jawab.</h2>
+        <p class="t-lead">Kirim tanggal, kota, dan perkiraan jumlah tamu. Tim WO membalas lewat WhatsApp.</p>
+        <a class="btn btn--wa" href={wa} rel="noopener" data-track="wa:catalog-faq">
+          <Icon name="whatsapp" size={22} />Chat tim WO, {WA.wo.label}
+        </a>
+      </div>
+      <Faq items={WO_FAQ} id="faq-catalog" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .cat-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: var(--s-8);
+    align-items: end;
+    padding-block: clamp(24px, 4vw, 56px) 0;
+  }
+  .cat-hero .t-lead {
+    margin-top: var(--s-4);
+  }
+  .cat-hero__photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--s-4) var(--s-6);
+    padding-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line);
+  }
+  .filters__needs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .fchip {
+    position: relative;
+  }
+  .fchip input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .fchip span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 0 var(--s-4);
+    border-radius: 999px;
+    background: var(--mist);
+    color: var(--ink);
+    font-size: var(--t-small);
+    font-weight: 600;
+    transition: background-color var(--t-hover) ease, color var(--t-hover) ease;
+  }
+  .fchip:hover span {
+    background: var(--haze);
+  }
+  .fchip input:checked + span {
+    background: var(--brand);
+    color: #fff;
+  }
+  .fchip input:focus-visible + span {
+    outline: 2.5px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .fchip--link {
+    text-decoration: none;
+  }
+  .fchip--link span {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--brand);
+  }
+  .filters__selects {
+    display: flex;
+    gap: var(--s-4);
+  }
+  .filters__selects label {
+    display: grid;
+    gap: 2px;
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .filters__selects select {
+    min-height: 44px;
+    padding: 0 var(--s-6) 0 var(--s-3);
+    border: 1.5px solid var(--lilac);
+    border-radius: var(--r-s);
+    background: var(--paper);
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .cat__count {
+    margin-block: var(--s-5);
+    font-size: var(--t-small);
+    color: var(--ink-2);
+  }
+  .cat__grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-6) var(--s-5);
+  }
+  .cat__grid > li {
+    display: grid;
+  }
+  .cat__empty {
+    display: grid;
+    gap: var(--s-3);
+    justify-items: start;
+    padding: var(--s-7);
+    border-radius: var(--r-l);
+    background: var(--mist);
+  }
+  .cat__empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-3);
+  }
+
+  .kelas__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .kelas__copy {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+  }
+  .kelas__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+
+  .flow__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--s-8);
+  }
+  .flow__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-7) var(--s-6);
+  }
+  .flow__num {
+    display: block;
+    font-family: var(--serif);
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .flow__step h3 {
+    margin-top: var(--s-4);
+  }
+  .flow__step p {
+    margin-top: var(--s-2);
+    color: var(--ink-2);
+    max-width: 34ch;
+  }
+
+  .wo-faq__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--s-8);
+  }
+  .wo-faq__aside {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--s-4);
+  }
+  .wo-faq__aside .btn {
+    white-space: normal;
+    text-align: left;
+    padding-block: var(--s-3);
+  }
+
+  @media (max-width: 1100px) {
+    .cat__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .kelas__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 900px) {
+    .cat-hero,
+    .flow__grid,
+    .wo-faq__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-6);
+    }
+    .cat-hero__photo {
+      display: none;
+    }
+    .flow__list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .cat__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .kelas__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .filters__needs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin-inline: calc(-1 * var(--gutter));
+      padding-inline: var(--gutter);
+      scrollbar-width: none;
+      width: calc(100% + 2 * var(--gutter));
+      max-width: none;
+    }
+    .fchip span {
+      white-space: nowrap;
+    }
+    .filters__selects {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      width: 100%;
+    }
+    .filters__selects select {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import "../../scripts/catalog.ts";
+</script>

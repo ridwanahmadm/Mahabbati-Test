@@ -1,0 +1,149 @@
+---
+import { Image } from "astro:assets";
+import Icon from "./Icon.astro";
+import { photo } from "../data/images";
+import { type Package, needLabel, guestRange } from "../data/packages";
+import { rupiahShort, url } from "../data/site";
+
+interface Props {
+  pkg: Package;
+  sizes?: string;
+  headingLevel?: "h2" | "h3";
+}
+const { pkg, sizes = "(max-width: 720px) 92vw, (max-width: 1100px) 46vw, 30vw", headingLevel = "h3" } = Astro.props;
+const g = guestRange(pkg);
+const H = headingLevel;
+---
+
+<article
+  class="pcard"
+  data-pcard
+  data-need={pkg.need}
+  data-min={g.min}
+  data-max={g.max}
+  data-price={pkg.priceFrom}
+>
+  <figure class="pcard__photo photo">
+    <Image src={photo(pkg.photo)} alt="" widths={[360, 540, 720, 960]} sizes={sizes} />
+    {pkg.placeholder && <span class="chip chip--sample">Data contoh</span>}
+  </figure>
+  <div class="pcard__body">
+    <p class="pcard__need">{needLabel(pkg.need)}</p>
+    <H class="pcard__name">
+      <a href={url(`/layanan/${pkg.slug}/`)} class="pcard__link">{pkg.name}</a>
+    </H>
+    <p class="pcard__promise">{pkg.promise}</p>
+    <dl class="pcard__meta">
+      <div>
+        <dt>mulai</dt>
+        <dd class="num pcard__price">{rupiahShort(pkg.priceFrom)}</dd>
+      </div>
+      <div>
+        <dt>tamu</dt>
+        <dd class="num">{g.min} sampai {g.max.toLocaleString("id-ID")}</dd>
+      </div>
+    </dl>
+    {
+      pkg.includesClass && (
+        <p class="pcard__class">
+          <Icon name="school" size={18} />
+          Termasuk kelas pranikah bersama asatidz
+        </p>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .pcard {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border-radius: var(--r-l);
+    background: var(--paper);
+    overflow: clip;
+    box-shadow: inset 0 0 0 1px var(--line);
+    transition: box-shadow var(--t-ui) ease;
+  }
+  .pcard:hover {
+    box-shadow: var(--shadow-float);
+  }
+  .pcard:focus-within {
+    outline: 2.5px solid var(--focus);
+    outline-offset: 3px;
+  }
+  .pcard__photo {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pcard__photo :global(img) {
+      transition: transform 900ms var(--ease-expo);
+    }
+    .pcard:hover .pcard__photo :global(img) {
+      transform: scale(1.04);
+    }
+  }
+  .pcard__body {
+    display: grid;
+    align-content: start;
+    gap: var(--s-2);
+    padding: var(--s-5);
+  }
+  .pcard__need {
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+  .pcard__name {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+  .pcard__link {
+    text-decoration: none;
+  }
+  .pcard__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .pcard__link:focus-visible {
+    outline: none;
+  }
+  .pcard__promise {
+    color: var(--ink-2);
+    font-size: var(--t-small);
+  }
+  .pcard__meta {
+    display: flex;
+    gap: var(--s-6);
+    margin-top: var(--s-2);
+  }
+  .pcard__meta dt {
+    font-size: var(--t-micro);
+    color: var(--ink-2);
+  }
+  .pcard__meta dd {
+    font-weight: 600;
+  }
+  .pcard__price {
+    font-family: var(--serif);
+    font-weight: 400 !important;
+    font-size: 1.375rem;
+  }
+  .pcard__class {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: var(--s-2);
+    font-size: var(--t-small);
+    color: var(--ink);
+  }
+  .pcard__class :global(.icon) {
+    color: var(--accent);
+    flex: none;
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+// Mahabbati logo from the vector paths used by the splash animation (potrace of the Figma logo).
+import paths from "../data/logo-paths.json";
+
+interface Props {
+  part?: "mark" | "word" | "lockup";
+  class?: string;
+  title?: string;
+}
+const { part = "lockup", class: cls, title } = Astro.props;
+const { mark, word } = paths;
+---
+
+{
+  part === "mark" && (
+    <svg
+      viewBox={`0 0 ${mark.w} ${mark.h}`}
+      class:list={["logo-mark", cls]}
+      role={title ? "img" : undefined}
+      aria-label={title}
+      aria-hidden={title ? undefined : "true"}
+      focusable="false"
+    >
+      <path d={mark.d} fill="currentColor" fill-rule="evenodd" />
+    </svg>
+  )
+}
+{
+  part === "word" && (
+    <svg
+      viewBox={`0 0 ${word.w} ${word.h}`}
+      class:list={["logo-word", cls]}
+      role={title ? "img" : undefined}
+      aria-label={title}
+      aria-hidden={title ? undefined : "true"}
+      focusable="false"
+    >
+      <path d={word.d} fill="currentColor" fill-rule="evenodd" />
+    </svg>
+  )
+}
+{
+  part === "lockup" && (
+    <span class:list={["logo-lockup", cls]}>
+      <svg viewBox={`0 0 ${mark.w} ${mark.h}`} class="logo-lockup__mark" aria-hidden="true" focusable="false">
+        <path d={mark.d} fill="currentColor" fill-rule="evenodd" />
+      </svg>
+      <svg viewBox={`0 0 ${word.w} ${word.h}`} class="logo-lockup__word" aria-hidden="true" focusable="false">
+        <path d={word.d} fill="currentColor" fill-rule="evenodd" />
+      </svg>
+      <span class="visually-hidden">{title ?? "Mahabbati"}</span>
+    </span>
+  )
+}

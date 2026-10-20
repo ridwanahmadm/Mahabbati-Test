@@ -1,0 +1,320 @@
+---
+// "Persimpangan": two doors side by side. The side you lean toward widens and opens in colour (cross.ts).
+import { Image } from "astro:assets";
+import Logo from "./Logo.astro";
+import { photo } from "../data/images";
+
+type Door = { title: string; body: string; cta: string; href: string; photo: string; alt: string; track?: string };
+interface Props {
+  id: string;
+  title: string;
+  ask?: string;
+  left: Door;
+  right: Door;
+  headingLevel?: "h1" | "h2";
+}
+const { id, title, ask, left, right, headingLevel = "h2" } = Astro.props;
+const H = headingLevel;
+const doors = [
+  { side: "left", d: left },
+  { side: "right", d: right },
+] as const;
+---
+
+<section class="cross" aria-labelledby={`${id}-title`}>
+  <div class="cross__intro wrap">
+    <H id={`${id}-title`} class="t-display">{title}</H>
+    {ask && <p class="cross__ask">{ask}</p>}
+  </div>
+
+  <div class="cross__stage" data-cross>
+    {
+      doors.map(({ side, d }, i) => (
+        <article class:list={["cross__side", `cross__side--${side}`]} data-side={side} aria-labelledby={`${id}-${side}`}>
+          <div class="cross__media">
+            <Image class="cross__img cross__img--mono" src={photo(d.photo)} alt={d.alt} widths={[640, 960, 1280, 1600]} sizes="(max-width: 900px) 100vw, 58vw" />
+            <Image class="cross__img cross__img--color" src={photo(d.photo)} alt="" widths={[640, 960, 1280, 1600]} sizes="(max-width: 900px) 100vw, 58vw" />
+          </div>
+          <div class="cross__text on-dark">
+            <h3 id={`${id}-${side}`} class="cross__title">{d.title}</h3>
+            <p>{d.body}</p>
+            <a class="btn btn--light cross__cta" href={d.href} data-track={d.track}>
+              {d.cta}
+            </a>
+          </div>
+        </article>
+      ))
+    }
+    <div class="cross__seam" aria-hidden="true">
+      <span class="cross__knot"><Logo part="mark" /></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ---------- Persimpangan ---------- */
+  .cross {
+    display: flex;
+    flex-direction: column;
+    height: min(92svh, 900px);
+    min-height: 620px;
+  }
+  .cross__intro {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-3) var(--s-6);
+    padding-block: clamp(20px, 3vw, 40px) clamp(24px, 3.4vw, 48px);
+  }
+  .cross__intro h2 {
+    font-size: var(--t-h2);
+  }
+  .cross__ask {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: var(--t-lead);
+    color: var(--ink-2);
+  }
+
+  .cross__stage {
+    --split: 50%;
+    --pad: clamp(24px, 3.2vw, 56px);
+    position: relative;
+    flex: 1;
+    min-height: 440px;
+    overflow: clip;
+    background: var(--night);
+    isolation: isolate;
+  }
+  .cross__side {
+    position: absolute;
+    inset: 0;
+  }
+  .cross__side--left {
+    clip-path: inset(0 calc(100% - var(--split)) 0 0);
+  }
+  .cross__side--right {
+    clip-path: inset(0 0 0 var(--split));
+  }
+  .cross__media {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 58%;
+    overflow: clip;
+  }
+  .cross__side--left .cross__media {
+    left: 0;
+  }
+  .cross__side--right .cross__media {
+    right: 0;
+  }
+  .cross__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cross__side--left .cross__img {
+    object-position: 50% 30%;
+  }
+  .cross__side--right .cross__img {
+    object-position: 50% 64%;
+  }
+  /* Brand-tinted resting state; the hovered side opens in full colour (cross.ts). */
+  .cross__img--mono {
+    filter: grayscale(1) contrast(1.08) brightness(0.86);
+  }
+  .cross__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: var(--brand);
+    mix-blend-mode: color;
+    pointer-events: none;
+  }
+  .cross__img--color {
+    z-index: 2;
+    clip-path: circle(var(--r, 0px) at var(--cx, 50%) var(--cy, 60%));
+  }
+  .cross__media::before {
+    /* text scrim, functional: keeps white text >= 4.5:1 on any photo */
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: linear-gradient(
+      to top,
+      rgba(34, 33, 54, 0.92) 0%,
+      rgba(34, 33, 54, 0.82) 30%,
+      rgba(34, 33, 54, 0.62) 50%,
+      rgba(34, 33, 54, 0.28) 64%,
+      rgba(34, 33, 54, 0) 76%
+    );
+    pointer-events: none;
+  }
+  .cross__text {
+    position: absolute;
+    z-index: 4;
+    bottom: var(--pad);
+    width: min(27rem, calc(38% - 2 * var(--pad)));
+    color: #fff;
+  }
+  .cross__side--left .cross__text {
+    left: var(--pad);
+  }
+  .cross__side--right .cross__text {
+    right: var(--pad);
+  }
+  .cross__title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2rem, 1.2rem + 2.4vw, 3.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+  .cross__text p {
+    margin-top: var(--s-3);
+    color: var(--haze);
+    max-width: 34ch;
+  }
+  .cross__cta {
+    margin-top: var(--s-5);
+  }
+  /* The whole side is a target; the link stays the single accessible control.
+     clip-path (desktop) and overflow:clip (mobile) keep the hit area inside its own side. */
+  .cross__cta::after {
+    content: "";
+    position: absolute;
+    inset: -200vmax;
+  }
+  .cross__seam {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    bottom: 0;
+    left: var(--split);
+    width: 2px;
+    margin-left: -1px;
+    background: var(--lilac);
+    pointer-events: none;
+  }
+  .cross__knot {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 112px;
+    height: 64px;
+    border-radius: 0 0 var(--r-l) var(--r-l);
+    background: var(--ground);
+    color: var(--brand);
+    transform: translateX(-50%);
+  }
+  .cross__knot :global(.logo-mark) {
+    width: 72px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .js .cross__side--left {
+      animation: open-left 1100ms var(--ease-in-out) 120ms both;
+    }
+    .js .cross__side--right {
+      animation: open-right 1100ms var(--ease-in-out) 120ms both;
+    }
+    .js .cross__text {
+      animation: rise 700ms var(--ease-out) 620ms both;
+    }
+    .js .cross__seam {
+      animation: seam 900ms var(--ease-expo) both;
+    }
+  }
+  @keyframes open-left {
+    from {
+      clip-path: inset(0 50% 0 50%);
+    }
+  }
+  @keyframes open-right {
+    from {
+      clip-path: inset(0 50% 0 50%);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  @keyframes seam {
+    from {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .cross {
+      height: auto;
+      min-height: 0;
+      max-height: none;
+    }
+    .cross__stage {
+      height: auto;
+      background: none;
+      overflow: visible;
+    }
+    .cross__side {
+      position: relative;
+      height: clamp(420px, 66svh, 560px);
+      clip-path: none !important;
+      animation: none !important;
+      overflow: clip;
+    }
+    .cross__media {
+      width: 100%;
+    }
+    .cross__media::after,
+    .cross__img--mono {
+      display: none;
+    }
+    .cross__img--color {
+      clip-path: none;
+    }
+    .cross__text {
+      width: auto;
+      left: var(--gutter) !important;
+      right: var(--gutter) !important;
+      bottom: var(--s-6);
+    }
+    .cross__seam {
+      display: none;
+    }
+  }
+  @media (hover: none) {
+    .cross__media::after,
+    .cross__img--mono {
+      display: none;
+    }
+    .cross__img--color {
+      clip-path: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cross__media::after {
+      display: none;
+    }
+    .cross__img--color {
+      clip-path: none;
+    }
+  }
+
+</style>
+
+<script>
+  import "../scripts/cross.ts";
+</script>
